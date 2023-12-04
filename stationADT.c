@@ -1,4 +1,5 @@
 #include "stationADT.h"
+#include "bstADT.h"
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
@@ -32,7 +33,8 @@ struct node {
 typedef struct node * tList;
 
 struct stationCDT {
-    //query3:
+    bstADT bst; // BST para buscar y verificar las id de forma eficiente
+    // query3:
     int week[T_DAYS];
     tList alphaFirst;
     tList countFirst;
@@ -40,21 +42,35 @@ struct stationCDT {
 
 stationADT newStationADT(void) {
     stationADT new = malloc(sizeof(struct stationCDT));
+    if (new == NULL) {
+        printf("ERROR\n");
+        exit(1);
+    }
     for (int i = MON; i < T_DAYS; i++) {
         new->week[i] = 0;
     }
     new->alphaFirst = NULL;
     new->countFirst = NULL;
+    new->bst = newBst();
     return new;
 }
 
-tList addListRec(tList l, char * name, unsigned len) {
+tList addListRec(tList l, char * name, unsigned len, tList * added) {
     int c;
     if (l == NULL || (c = strcasecmp(l->head.sName, name)) > 0) {
         tList newNode = calloc(1, sizeof(*newNode));
+        if (newNode == NULL) {
+            printf("ERROR\n");
+            exit(1);
+        }
         newNode->head.sName = malloc(len+1);
+        if (newNode->head.sName == NULL) {
+            printf("ERROR\n");
+            exit(1);
+        }
         strcpy(newNode->head.sName, name);
         newNode->alphaTail = l;
+        *added = newNode;
         return newNode;
     }
     l->alphaTail = addListRec(l->alphaTail, name, len);
@@ -62,7 +78,13 @@ tList addListRec(tList l, char * name, unsigned len) {
 }
 
 void addStationADT(stationADT station, char * name) {
+    tList added = NULL;
     station->alphaFirst = addListRec(station->alphaFirst, name, strlen(name));
+    if (added == NULL) {
+        printf("ERROR\n");
+        exit(1);
+    }
+    
 }
 
 int main(int argc, char const *argv[]) {

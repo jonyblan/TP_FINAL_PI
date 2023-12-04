@@ -1,9 +1,10 @@
-#include "tp11_18.h"
+#include "bstADT.h"
 #include <stdlib.h>
 #include <stdio.h>
 
 struct node {
-    elemType head;
+    unsigned id; // id de la estacion
+    void * ptr; // puntero a nodo de la lista
     struct node * left;
     struct node * right;
 };
@@ -50,31 +51,27 @@ int belongs(const bstADT bst, elemType elem) {
     return belongsTreeRec(bst->tree, elem);
 }
 
-static tTree insertTreeRec(tTree t, elemType elem, int * added, int * height) {
+static tTree insertTreeRec(tTree t, elemType elem, void * p) {
     if (t == NULL) {
         tTree newNode = malloc(sizeof(*newNode));
         newNode->head = elem;
         newNode->left = NULL;
         newNode->right = NULL;
+        newNode->ptr = p;
         *added = 1;
         return newNode;
     }
     int c;
     if ((c = compare(t->head, elem)) > 0) {
-        (*height)++;
         t->left = insertTreeRec(t->left, elem, added, height);
     } else if (c < 0) {
-        (*height)++;
         t->right = insertTreeRec(t->right, elem, added, height);
     }
     return t;
 }
 
-int insert(bstADT bst, elemType elem) {
-    int added = 0, height = 0;
-    bst->tree = insertTreeRec(bst->tree, elem, &added, &height);
-    bst->size += added;
-    bst->height = added ? height : bst->height;
+int insert(bstADT bst, elemType elem, void * p) {
+    bst->tree = insertTreeRec(bst->tree, elem, p);
     return added;
 }
 
