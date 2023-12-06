@@ -29,20 +29,28 @@ stationADT newStaADT(void);
 // agrega una nueva estacion a las estructuras
 void addStaADT(stationADT sta, char * name, unsigned id);
 
+// agrega un viaje ya con toda la informacion necesaria a las estructuras
 void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm tEnd, unsigned idEnd, char isMember);
 
+// inicia el iterador para la query1
 void start1StaADT(stationADT sta);
 
+// verifica que haya proximo para la query1
 int hasNext1StaADT(stationADT sta);
 
+// devuelve el siguiente y aumenta el iterador de la query1
 query1 next1StaADT(stationADT sta);
 
+// inicia el iterador para la query2
 void start2StaADT(stationADT sta);
 
+// verifica que haya proximo para la query1
 int hasNext2StaADT(stationADT sta);
 
+// devuelve el siguiente y aumenta el iterador de la query1
 query2 next2StaADT(stationADT sta);
 
+// devuelve la informacion necesaria para la query3
 query3 query3StaADT(stationADT sta);
 
 #endif

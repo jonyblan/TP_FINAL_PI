@@ -10,7 +10,7 @@
 enum DIAS {MON = 0, TUE, WED, THU, FRI, SAT, SUN};
 
 struct trip {
-    time_t nTime; // valor de hora de inicio
+    time_t nTime; // time_t de hora de inicio
     struct tm sTime; // datos de hora de inicio
     char * eName; // nombre de estacion de fin
 };
@@ -27,30 +27,35 @@ struct trips {
 struct node {
     struct trips head; // estacion almacenada en nodo
     struct node * alphaTail; // siguiente en forma alfabetica
-    struct node * countTail; // siguiente en cantidad de viajes
+};
+
+struct query1 {
+    char * name;
+    unsigned memberTrips;
+    unsigned totalTrips;
 };
 
 typedef struct node * tList;
 
 struct stationCDT {
     bstADT bst; // BST para buscar y verificar las id de forma eficiente
+    struct query1 * arr; // array ordenado para query1
+    tList list; // primer nodo de la lista
     // query3:
-    int week[T_DAYS];
-    tList alphaFirst;
-    tList countFirst;
+    unsigned week[T_DAYS];
 };
 
-stationADT newStationADT(void) {
+stationADT newStaADT(void) {
     stationADT new = malloc(sizeof(struct stationCDT));
     if (new == NULL) {
-        printf("ERROR\n");
+        fprintf(stderr, "Error: no se pudo crear stationADT\n");
         exit(1);
     }
     for (int i = MON; i < T_DAYS; i++) {
         new->week[i] = 0;
     }
-    new->alphaFirst = NULL;
-    new->countFirst = NULL;
+    new->list = NULL;
+    new->arr = NULL;
     new->bst = newBst();
     return new;
 }
@@ -60,12 +65,12 @@ tList addListRec(tList l, char * name, unsigned len, tList * added) {
     if (l == NULL || (c = strcasecmp(l->head.sName, name)) > 0) {
         tList newNode = calloc(1, sizeof(*newNode));
         if (newNode == NULL) {
-            printf("ERROR\n");
+            fprintf(stderr, "Error: no se pudo agregar un nuevo nodo a la lista\n");
             exit(1);
         }
         newNode->head.sName = malloc(len+1);
         if (newNode->head.sName == NULL) {
-            printf("ERROR\n");
+            fprintf(stderr, "Error: no se pudo almacenar el nombre de un nuevo nodo a la lista\n");
             exit(1);
         }
         strcpy(newNode->head.sName, name);
@@ -73,13 +78,13 @@ tList addListRec(tList l, char * name, unsigned len, tList * added) {
         *added = newNode;
         return newNode;
     }
-    l->alphaTail = addListRec(l->alphaTail, name, len);
+    l->alphaTail = addListRec(l->alphaTail, name, len, added);
     return l;
 }
 
-void addStationADT(stationADT station, char * name) {
+void addStaADT(stationADT station, char * name, unsigned id) {
     tList added = NULL;
-    station->alphaFirst = addListRec(station->alphaFirst, name, strlen(name));
+    station->list = addListRec(station->list, name, strlen(name), added);
     if (added == NULL) {
         printf("ERROR\n");
         exit(1);
