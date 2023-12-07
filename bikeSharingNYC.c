@@ -137,11 +137,15 @@ int main(int argc, char const *argv[]) {
     char * q2camp2="bikeEndStation";
     char * q2camp3="oldestDateTime";
     fprintf(pQuery2, "%s;%s;%s\n",q2camp1,q2camp2,q2camp3);
+
     start2StaADT(stations);
+    query2 q2;
     while(hasNext2StaADT(stations)){
-        query2 q2=next2StaADT(stations);
+        q2=next2StaADT(stations);
         fprintf(pQuery2, "%s;%s;%d/%d/%d %d:%d \n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_year,q2.oldestDateTime.tm_mon,q2.oldestDateTime.tm_mday,q2.oldestDateTime.tm_hour,q2.oldestDateTime.tm_min );
     }
+
+    
     freePostReadStaADT(stations);
     freeEndStaADT(stations);
         printf("Tiempo: %ld segundos\n", time(NULL)-t);
