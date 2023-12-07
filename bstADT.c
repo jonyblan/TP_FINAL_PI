@@ -15,7 +15,7 @@ struct bstCDT {
     tTree tree;
 };
 
-bstADT newBst(void) {
+bstADT newBstADT(void) {
     return calloc(1, sizeof(struct bstCDT));
 }
 
@@ -28,83 +28,47 @@ static void freeTreeRec(tTree t) {
     free(t);
 }
 
-void freeBst(bstADT bst) {
+void freeBstADT(bstADT bst) {
     freeTreeRec(bst->tree);
     free(bst);
 }
 
-static int belongsTreeRec(tTree t, elemType elem) {
+static void * belongsTreeRec(tTree t, unsigned id) {
     if (t == NULL) {
-        return 0;
+        return NULL;
     }
     int c;
-    if ((c = compare(t->head, elem)) > 0) {
-        return belongsTreeRec(t->left, elem);
+    if ((c = t->id - id) > 0) {
+        return belongsTreeRec(t->left, id);
     }
     if (c < 0) {
-        return belongsTreeRec(t->right, elem);
+        return belongsTreeRec(t->right, id);
     }
-    return 1;
+    return t->ptr;
 }
 
-int belongs(const bstADT bst, elemType elem) {
-    return belongsTreeRec(bst->tree, elem);
+void * belongsBstADT(const bstADT bst, unsigned id) {
+    return belongsTreeRec(bst->tree, id);
 }
 
-static tTree insertTreeRec(tTree t, elemType elem, void * p) {
+static tTree insertTreeRec(tTree t, unsigned id, void * p) {
     if (t == NULL) {
         tTree newNode = malloc(sizeof(*newNode));
-        newNode->head = elem;
+        newNode->id = id;
         newNode->left = NULL;
         newNode->right = NULL;
         newNode->ptr = p;
-        *added = 1;
         return newNode;
     }
     int c;
-    if ((c = compare(t->head, elem)) > 0) {
-        t->left = insertTreeRec(t->left, elem, added, height);
+    if ((c = t->id - id) > 0) {
+        t->left = insertTreeRec(t->left, id, p);
     } else if (c < 0) {
-        t->right = insertTreeRec(t->right, elem, added, height);
+        t->right = insertTreeRec(t->right, id, p);
     }
     return t;
 }
 
-int insert(bstADT bst, elemType elem, void * p) {
-    bst->tree = insertTreeRec(bst->tree, elem, p);
-    return added;
-}
-
-int main(void) {
-    bstADT bst = newBst();
-    printf("Size=0: %d\n", size(bst));
-    printf("Height=0: %d\n", height(bst));
-    printf("Belongs=0: %d\n", belongs(bst, 1));
-    puts("");
-    printf("Insert=1: %d\n", insert(bst, 1));
-    printf("Size=1: %d\n", size(bst));
-    printf("Height=0: %d\n", height(bst));
-    printf("Belongs=1: %d\n", belongs(bst, 1));
-    puts("");
-    printf("Insert=0: %d\n", insert(bst, 1));
-    printf("Insert=1: %d\n", insert(bst, 3));
-    printf("Insert=1: %d\n", insert(bst, 6));
-    printf("Insert=1: %d\n", insert(bst, 10));
-    printf("Insert=1: %d\n", insert(bst, 11));
-    puts("");
-    printf("Size=5: %d\n", size(bst));
-    printf("Height=4: %d\n", height(bst));
-    printf("belongs=1: %d\n", belongs(bst, 1));
-    printf("belongs=1: %d\n", belongs(bst, 3));
-    printf("belongs=1: %d\n", belongs(bst, 6));
-    printf("belongs=1: %d\n", belongs(bst, 10));
-    printf("belongs=1: %d\n", belongs(bst, 11));
-    puts("");
-    int * arr = inorder(bst);
-    for (int i = 0; i < size(bst); i++) {
-        printf("[%d] ", arr[i]);
-    }
-    puts("");
-    puts("");
-    return 0;
+void insertBstADT(bstADT bst, unsigned id, void * p) {
+    bst->tree = insertTreeRec(bst->tree, id, p);
 }

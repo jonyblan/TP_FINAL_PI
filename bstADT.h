@@ -4,16 +4,15 @@
 typedef struct bstCDT * bstADT;
 
 // Crea un arbol binario de busqueda
-bstADT newBst(void);
+bstADT newBstADT(void);
 
 // Libera toda la memoria reservada por el TAD
-void freeBst(bstADT bst);
+void freeBstADT(bstADT bst);
 
-// Retorna 1 si el elemento estaก en el arbol, cero si no esta
-int belongs(const bstADT bst, elemType elem);
+// Retorna el puntero
+void * belongsBstADT(const bstADT bst, unsigned id);
 
 // Agrega un elemento respetando el orden
-// Retorna 1 si lo pudo agregar (no estaba), cero si no (ya estaba)
-int insert(bstADT bst, elemType elem, void * p);
+void insertBstADT(bstADT bst, unsigned id, void * p);
 
 #endif
