@@ -32,16 +32,15 @@ static void printTime(struct tm t) {
 void readStatFile(FILE * fileBike, stationADT station) {
 char * s = NULL;
     char * token;
-    size_t len;
     int a = 0;
-    if (getLine(&s, &len, fileBike) == -1) {
+    if (getLine(&s, fileBike) == -1) {
         fprintf(stderr, "Error al leer archivo\n");
         exit(1);
     }
     free(s);
     s = NULL;
     while (!feof(fileBike)) {
-        if ((getLine(&s, &len, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
+        if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned id;
             char *aux;
             for (int i = 0; token != NULL && i < CANTCOL; token = strtok(NULL, ";"), i++) {
@@ -50,7 +49,7 @@ char * s = NULL;
                     aux=token;
                     break;
                 case 3:
-                    sscanf(token, "%d", &id);
+                    sscanf(token, "%u", &id);
                     break;
                 default:
                     fprintf(stderr, "Error en switch de lectura de stations\n");
@@ -68,16 +67,14 @@ char * s = NULL;
 void readBikeFile(FILE * fileBike, stationADT stations) {
     char * s = NULL;
     char * token;
-    size_t len;
-    int a = 0;
-    if (getLine(&s, &len, fileBike) == -1) {
+    if (getLine(&s, fileBike) == -1) {
         fprintf(stderr, "Error al leer archivo\n");
         exit(1);
     }
     free(s);
     s = NULL;
     while (!feof(fileBike)) {
-        if ((getLine(&s, &len, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
+        if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned idStart, idEnd, isMember;
             struct tm dateStart, dateEnd;
             for (int i = 0; token != NULL; token = strtok(NULL, ";"), i++) {
@@ -86,7 +83,7 @@ void readBikeFile(FILE * fileBike, stationADT stations) {
                     sscanf(token, "%d-%d-%d %d:%d:%d", &(dateStart.tm_year), &(dateStart.tm_mon), &(dateStart.tm_mday), &(dateStart.tm_hour), &(dateStart.tm_min), &(dateStart.tm_sec));
                     break;
                 case 1:
-                    sscanf(token, "%d", &idStart);
+                    sscanf(token, "%u", &idStart);
                     break;
                 case 2:
                     sscanf(token, "%d-%d-%d %d:%d:%d", &(dateEnd.tm_year), &(dateEnd.tm_mon), &(dateEnd.tm_mday), &(dateEnd.tm_hour), &(dateEnd.tm_min), &(dateEnd.tm_sec));
@@ -133,7 +130,24 @@ int main(int argc, char const *argv[]) {
     
     readStatFile(fileStat, stations);
     readBikeFile(fileBike, stations);
+    char *que2="query2.csv";
 
-    printf("Tiempo: %ld segundos\n", time(NULL)-t);
+    FILE *pQuery2=fopen(que2, "w");
+    if(pQuery2==NULL){
+        printf("Problema creando %s. Aborto.\n", que2);
+        exit(1);
+    }
+    char * q2camp1="bikeStation";
+    char * q2camp2="bikeEndStation";
+    char * q2camp3="oldestDateTime";
+
+
+    fprintf(pQuery2, "%s;%s;%s\n",q2camp1,q2camp2,q2camp3);
+    while(hasNext2StaADT(stations)){
+        query2 q2=next2StaADT(stations);
+        fprintf(pQuery2, "%s;%s;%d/%d/%d %d:%d \n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_year,q2.oldestDateTime.tm_mon,q2.oldestDateTime.tm_mday,q2.oldestDateTime.tm_hour,q2.oldestDateTime.tm_min );
+    }
+
+        printf("Tiempo: %ld segundos\n", time(NULL)-t);
     return 0;
 }
