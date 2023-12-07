@@ -3,6 +3,8 @@
 
 #include <time.h>
 
+#define T_DAYS 7
+
 typedef struct stationCDT * stationADT;
 
 typedef struct q1 {
@@ -18,9 +20,13 @@ typedef struct q2 {
     struct tm oldestDateTime;
 } query2;
 
+struct q3_arr {
+    unsigned startedTrips;
+    unsigned endedTrips;
+};
+
 typedef struct q3 {
-    const unsigned * startedTrips;
-    const unsigned * endedTrips;
+    struct q3_arr arr[T_DAYS];
 } query3;
 
 // nuevo ADT para manejar las estaciones
@@ -30,7 +36,13 @@ stationADT newStaADT(void);
 void addStaADT(stationADT sta, char * name, unsigned id);
 
 // agrega un viaje ya con toda la informacion necesaria a las estructuras
-void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm tEnd, unsigned idEnd, char isMember);
+void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm tEnd, unsigned idEnd, int isMember);
+
+// una vez leida y almacenada toda la informacion, libera los recursos utilizados para leer
+void freePostReadStaADT(stationADT sta);
+
+// prepara las estructuras para poder realizar la query1
+void prepareQuery1StaADT(stationADT sta);
 
 // inicia el iterador para la query1
 void start1StaADT(stationADT sta);
@@ -52,5 +64,8 @@ query2 next2StaADT(stationADT sta);
 
 // devuelve la informacion necesaria para la query3
 query3 query3StaADT(stationADT sta);
+
+// libera todos los recursos utilizados por el ADT
+void freeEndStaADT(stationADT sta);
 
 #endif

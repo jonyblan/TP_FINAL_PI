@@ -4,27 +4,38 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BLOQUE 100
+#define CANTCOL 2
+#define BLOQUE 30
 
-static void printTime(struct tm t) {
-    printf("%d-%2d-%2d %2d:%2d:%2d", t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+int getLine(char ** s, FILE * file) {
+    size_t w = 0;
+    char c;
+
+    while ((c = fgetc(file)) != EOF && c != '\n') {
+        if (w%BLOQUE == 0) {
+            *s = realloc(*s, (w + BLOQUE + 1));
+            if (*s == NULL) {
+                return -1;
+            }
+        }
+        (*s)[w++] = c;
+    }
+
+    (*s)[w] = '\0';
+    return 1;
 }
 
 void readStatFile(FILE * fileBike, stationADT station) {
-char * s = NULL;
+    char * s = NULL;
     char * token;
-    size_t len;
-    int a = 0;
-    if (getline(&s, &len, fileBike) == -1) {
+    if (getLine(&s, fileBike) == -1) {
         fprintf(stderr, "Error al leer archivo\n");
         exit(1);
     }
-    free(s);
-    s = NULL;
     while (!feof(fileBike)) {
-        if ((getline(&s, &len, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
+        if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned id;
-            for (int i = 0; token != NULL && i < 2; token = strtok(NULL, ";"), i++) {
+            for (int i = 0; token != NULL && i < CANTCOL; token = strtok(NULL, ";"), i++) {
                 switch (i) {
                 case 0:
                     sscanf(token, "%d", &id);
@@ -39,24 +50,18 @@ char * s = NULL;
                 }
             }
         }
-        free(s);
-        s = NULL;
     }
 }
 
 void readBikeFile(FILE * fileBike, stationADT stations) {
     char * s = NULL;
     char * token;
-    size_t len;
-    int a = 0;
-    if (getline(&s, &len, fileBike) == -1) {
+    if (getLine(&s, fileBike) == -1) {
         fprintf(stderr, "Error al leer archivo\n");
         exit(1);
     }
-    free(s);
-    s = NULL;
     while (!feof(fileBike)) {
-        if ((getline(&s, &len, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
+        if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned idStart, idEnd, isMember;
             struct tm dateStart, dateEnd;
             for (int i = 0; token != NULL; token = strtok(NULL, ";"), i++) {
@@ -84,8 +89,6 @@ void readBikeFile(FILE * fileBike, stationADT stations) {
             }
             addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
         }
-        free(s);
-        s = NULL;
     }
 }
 
@@ -105,7 +108,17 @@ int main(int argc, char const *argv[]) {
     stationADT stations = newStaADT();
     
     readStatFile(fileStat, stations);
+    
     readBikeFile(fileBike, stations);
+
+    freePostReadStaADT(stations);
+
+    query3 q3 = query3StaADT(stations);
+
+    printf("Query3:\n");
+    for (int i = 0; i < T_DAYS; i++) {
+        printf("%d: %d\t; %d\t\n", i, q3.arr[i].startedTrips, q3.arr[i].endedTrips);
+    }
 
     printf("Tiempo: %ld segundos\n", time(NULL)-t);
     return 0;

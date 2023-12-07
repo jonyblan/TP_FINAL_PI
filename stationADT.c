@@ -6,13 +6,13 @@
 #include <time.h>
 #include <stdio.h>
 
-#define T_DAYS 7
+#define WEEKDAY(d,m,y) (((d) += (m) < 3 ? (y)-- : (y) - 2, 23*(m)/9 + (d) + 4 + (y)/4- (y)/100 + (y)/400)%7)
 enum DIAS {MON = 0, TUE, WED, THU, FRI, SAT, SUN};
 
 struct trip {
     time_t nTime; // time_t de hora de inicio
     struct tm sTime; // datos de hora de inicio
-    char * eName; // nombre de estacion de fin
+    char * endName; // nombre de estacion de fin
 };
 
 struct trips {
@@ -20,7 +20,7 @@ struct trips {
     unsigned memberTrips; // viajes de usuarios miembros
     unsigned casualTrips; // viajes de usuarios casuales
     // query2:
-    char * sName; // nombre de estacion de inicio
+    char * name; // nombre de estacion de inicio
     struct trip oldest; // viaje mas antiguo
 };
 
@@ -29,7 +29,7 @@ struct node {
     struct node * alphaTail; // siguiente en forma alfabetica
 };
 
-struct query1 {
+struct countTrips {
     char * name;
     unsigned memberTrips;
     unsigned totalTrips;
@@ -39,41 +39,45 @@ typedef struct node * tList;
 
 struct stationCDT {
     bstADT bst; // BST para buscar y verificar las id de forma eficiente
-    struct query1 * arr; // array ordenado para query1
+    struct countTrips * arr; // array ordenado para query1
+    unsigned dim;        //
     tList list; // primer nodo de la lista
     // query3:
-    unsigned week[T_DAYS];
+    unsigned weekStarts[T_DAYS]; //cambiarlo a struct para guardar entradas y salidas
+    unsigned weekEnds[T_DAYS];   //
+    // iteradores para q1 y q2;
+    unsigned itQ1;
+    tList itQ2;
 };
 
 stationADT newStaADT(void) {
-    stationADT new = malloc(sizeof(struct stationCDT));
+    stationADT new = calloc(1, sizeof(struct stationCDT));
     if (new == NULL) {
         fprintf(stderr, "Error: no se pudo crear stationADT\n");
         exit(1);
     }
     for (int i = MON; i < T_DAYS; i++) {
-        new->week[i] = 0;
+        new->weekStarts[i] = 0;
+        new->weekEnds[i] = 0;
     }
-    new->list = NULL;
-    new->arr = NULL;
-    new->bst = newBst();
+    new->bst = newBstADT();
     return new;
 }
 
 tList addListRec(tList l, char * name, unsigned len, tList * added) {
     int c;
-    if (l == NULL || (c = strcasecmp(l->head.sName, name)) > 0) {
+    if (l == NULL || (c = strcasecmp(l->head.name, name)) > 0) {
         tList newNode = calloc(1, sizeof(*newNode));
         if (newNode == NULL) {
             fprintf(stderr, "Error: no se pudo agregar un nuevo nodo a la lista\n");
             exit(1);
         }
-        newNode->head.sName = malloc(len+1);
-        if (newNode->head.sName == NULL) {
+        newNode->head.name = malloc(len+1);
+        if (newNode->head.name == NULL) {
             fprintf(stderr, "Error: no se pudo almacenar el nombre de un nuevo nodo a la lista\n");
             exit(1);
         }
-        strcpy(newNode->head.sName, name);
+        strcpy(newNode->head.name, name);
         newNode->alphaTail = l;
         *added = newNode;
         return newNode;
@@ -82,20 +86,92 @@ tList addListRec(tList l, char * name, unsigned len, tList * added) {
     return l;
 }
 
-void addStaADT(stationADT station, char * name, unsigned id) {
+void addStaADT(stationADT sta, char * name, unsigned id) {
     tList added = NULL;
-    station->list = addListRec(station->list, name, strlen(name), added);
+    sta->list = addListRec(sta->list, name, strlen(name), &added);
     if (added == NULL) {
-        printf("ERROR\n");
+        fprintf(stderr, "Error: no se pudo agregar un nuevo nodo a la lista(2)\n");
         exit(1);
     }
-    
+    insertBstADT(sta->bst, id, added);
 }
 
-int main(int argc, char const *argv[]) {
-    sizeof(struct stationCDT);
-    return 0;
+void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm tEnd, unsigned idEnd, int isMember) {
+    tList node = belongsBstADT(sta->bst, idStart);
+    if (node == NULL) {
+        return;
+    }
+    time_t t;
+    tList endNode = NULL;
+    if ((node->head.oldest.nTime <= (t = mktime(&tStart)) && node->head.oldest.nTime != 0) || (endNode = belongsBstADT(sta->bst, idEnd)) == NULL) {
+        return;
+    }
+    isMember ? node->head.memberTrips++ : node->head.casualTrips++;
+    node->head.oldest.nTime = t;
+    node->head.oldest.sTime = tStart;
+    node->head.oldest.endName = realloc(node->head.oldest.endName, strlen(endNode->head.name)+1);
+    strcpy(node->head.oldest.endName, endNode->head.name);
+    int weekdayStart = WEEKDAY(tStart.tm_mday,tStart.tm_mon,tStart.tm_year);
+    sta->weekStarts[weekdayStart]++;
+    int weekdayEnd = WEEKDAY(tEnd.tm_mday,tEnd.tm_mon,tEnd.tm_year);
+    sta->weekEnds[weekdayEnd]++;
 }
+
+void freePostReadStaADT(stationADT sta) {
+    freeBstADT(sta->bst);
+}
+
+void start1StaADT(stationADT sta) {
+    sta->itQ1 = 0;
+}
+
+int hasNext1StaADT(stationADT sta) {
+    return sta->itQ1 < sta->dim;
+}
+
+query1 next1StaADT(stationADT sta) {
+    if (!hasNext1StaADT(sta)) {
+        fprintf(stderr, "Error: no siguiente en it1\n");
+        exit(1);
+    }
+    query1 ret;
+    ret.bikeStation = sta->arr[sta->itQ1].name;
+    ret.memberTrips = sta->arr[sta->itQ1].memberTrips;
+    ret.casualTrips = sta->arr[sta->itQ1].totalTrips - sta->arr[sta->itQ1].memberTrips;
+    ret.totalTrips = sta->arr[sta->itQ1].totalTrips;
+    return ret;
+}
+
+void start2StaADT(stationADT sta) {
+    sta->itQ2 = sta->list;
+}
+
+int hasNext2StaADT(stationADT sta) {
+    return sta->itQ2 != NULL;
+}
+
+query2 next2StaADT(stationADT sta) {
+    if (!hasNext2StaADT(sta)) {
+        fprintf(stderr, "Error: no siguiente en it2\n");
+        exit(1);
+    }
+    query2 ret;
+    ret.bikeStation = sta->itQ2->head.name;
+    ret.bikeEndStation = sta->itQ2->head.oldest.endName;
+    ret.oldestDateTime = sta->itQ2->head.oldest.sTime;
+    return ret;
+}
+
+query3 query3StaADT(stationADT sta) {
+    query3 ret;
+    for (int i = 0; i < T_DAYS; i++) {
+        ret.arr[i].startedTrips = sta->weekStarts[i];
+        ret.arr[i].endedTrips = sta->weekEnds[i];
+    }
+    return ret;
+}
+
+// FALTAN LOS FREE
 
 
 /*
