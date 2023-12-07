@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define CANTCOL 4
+#define BLOQUE 100
 
 int getLine(char ** s, FILE * file) {
     size_t w = 0;
