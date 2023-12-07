@@ -4,6 +4,7 @@
 #include <time.h>
 
 #define T_DAYS 7
+enum DIAS {MON = 0, TUE, WED, THU, FRI, SAT, SUN};
 
 typedef struct stationCDT * stationADT;
 
@@ -41,10 +42,7 @@ void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm
 // una vez leida y almacenada toda la informacion, libera los recursos utilizados para leer
 void freePostReadStaADT(stationADT sta);
 
-// prepara las estructuras para poder realizar la query1
-void prepareQuery1StaADT(stationADT sta);
-
-// inicia el iterador para la query1
+// prepara las estructuras para poder realizar la query1 e inicia el iterador para la query1
 void start1StaADT(stationADT sta);
 
 // verifica que haya proximo para la query1
@@ -67,5 +65,7 @@ query3 query3StaADT(stationADT sta);
 
 // libera todos los recursos utilizados por el ADT
 void freeEndStaADT(stationADT sta);
+
+void a(stationADT sta);
 
 #endif

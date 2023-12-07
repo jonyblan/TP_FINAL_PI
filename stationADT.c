@@ -6,8 +6,7 @@
 #include <time.h>
 #include <stdio.h>
 
-#define WEEKDAY(d,m,y) (((d) += (m) < 3 ? (y)-- : (y) - 2, 23*(m)/9 + (d) + 4 + (y)/4- (y)/100 + (y)/400)%7)
-enum DIAS {MON = 0, TUE, WED, THU, FRI, SAT, SUN};
+#define WEEKDAY(d,m,y) ((((d) += (m) < 3 ? (y)-- : (y) - 2, 23*(m)/9 + (d) + 4 + (y)/4- (y)/100 + (y)/400)-1)%7)
 
 struct trip {
     time_t nTime; // time_t de hora de inicio
@@ -94,6 +93,7 @@ void addStaADT(stationADT sta, char * name, unsigned id) {
         exit(1);
     }
     insertBstADT(sta->bst, id, added);
+    sta->dim++;
 }
 
 void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm tEnd, unsigned idEnd, int isMember) {
@@ -103,25 +103,39 @@ void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm
     }
     time_t t;
     tList endNode = NULL;
-    if ((node->head.oldest.nTime <= (t = mktime(&tStart)) && node->head.oldest.nTime != 0) || (endNode = belongsBstADT(sta->bst, idEnd)) == NULL) {
+    if ((endNode = belongsBstADT(sta->bst, idEnd)) == NULL) {
         return;
     }
     isMember ? node->head.memberTrips++ : node->head.casualTrips++;
-    node->head.oldest.nTime = t;
-    node->head.oldest.sTime = tStart;
-    node->head.oldest.endName = realloc(node->head.oldest.endName, strlen(endNode->head.name)+1);
-    strcpy(node->head.oldest.endName, endNode->head.name);
     int weekdayStart = WEEKDAY(tStart.tm_mday,tStart.tm_mon,tStart.tm_year);
     sta->weekStarts[weekdayStart]++;
     int weekdayEnd = WEEKDAY(tEnd.tm_mday,tEnd.tm_mon,tEnd.tm_year);
     sta->weekEnds[weekdayEnd]++;
+    if (node->head.oldest.nTime > (t = mktime(&tStart)) || node->head.oldest.nTime == 0) {
+        node->head.oldest.nTime = t;
+        node->head.oldest.sTime = tStart;
+        node->head.oldest.endName = realloc(node->head.oldest.endName, strlen(endNode->head.name)+1);
+        strcpy(node->head.oldest.endName, endNode->head.name);
+    }
 }
 
 void freePostReadStaADT(stationADT sta) {
     freeBstADT(sta->bst);
 }
 
+static struct countTrips * listToArr(tList l, unsigned dim) {
+    struct countTrips * ret = malloc(dim * sizeof(*ret));
+    for (int i = 0; i < dim; i++) {
+        ret[i].memberTrips = l->head.memberTrips;
+        ret[i].totalTrips = l->head.memberTrips + l->head.casualTrips;
+        ret[i].name = l->head.name;
+        l = l->alphaTail;
+    }
+    return ret;
+}
+
 void start1StaADT(stationADT sta) {
+    sta->arr = listToArr(sta->list, sta->dim);
     sta->itQ1 = 0;
 }
 
@@ -171,7 +185,30 @@ query3 query3StaADT(stationADT sta) {
     return ret;
 }
 
-// FALTAN LOS FREE
+static void freeListRec(tList l) {
+    if (l == NULL) {
+        return;
+    }
+    free(l->head.oldest.endName);
+    free(l->head.name);
+    freeListRec(l->alphaTail);
+    free(l);
+}
+
+void freeEndStaADT(stationADT sta) {
+    freeListRec(sta->list);
+    free(sta->arr);
+    free(sta);
+}
+
+void a(stationADT sta) {
+    for (int i = 0; i < sta->dim; i++) {
+        printf("%d\t;%s\n", sta->arr[i].totalTrips, sta->arr[i].name);
+    }
+    
+}
+
+// NO PONER LOS EXIT AFUERA
 
 
 /*
