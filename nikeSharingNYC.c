@@ -6,6 +6,24 @@
 
 #define CANTCOL 4
 
+int getLine(char ** s, FILE * file) {
+    size_t w = 0;
+    char c;
+
+    while ((c = fgetc(file)) != EOF && c != '\n') {
+        if (w%BLOQUE == 0) {
+            s = realloc(s, (w + BLOQUE + 1));
+            if (s == NULL) {
+                return -1;
+            }
+        }
+        (s)[w++] = c;
+    }
+
+    (*s)[w] = '\0';
+    return 1;
+}
+
 static void printTime(struct tm t) {
     printf("%d-%2d-%2d %2d:%2d:%2d", t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 }
@@ -15,14 +33,14 @@ char * s = NULL;
     char * token;
     size_t len;
     int a = 0;
-    if (getline(&s, &len, fileBike) == -1) {
+    if (getLine(&s, &len, fileBike) == -1) {
         fprintf(stderr, "Error al leer archivo\n");
         exit(1);
     }
     free(s);
     s = NULL;
     while (!feof(fileBike)) {
-        if ((getline(&s, &len, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
+        if ((getLine(&s, &len, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned id;
             char *aux;
             for (int i = 0; token != NULL && i < CANTCOL; token = strtok(NULL, ";"), i++) {
@@ -51,14 +69,14 @@ void readBikeFile(FILE * fileBike, stationADT stations) {
     char * token;
     size_t len;
     int a = 0;
-    if (getline(&s, &len, fileBike) == -1) {
+    if (getLine(&s, &len, fileBike) == -1) {
         fprintf(stderr, "Error al leer archivo\n");
         exit(1);
     }
     free(s);
     s = NULL;
     while (!feof(fileBike)) {
-        if ((getline(&s, &len, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
+        if ((getLine(&s, &len, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned idStart, idEnd, isMember;
             struct tm dateStart, dateEnd;
             for (int i = 0; token != NULL; token = strtok(NULL, ";"), i++) {
