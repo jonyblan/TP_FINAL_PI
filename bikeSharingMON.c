@@ -85,14 +85,6 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
                     break;
                 }
             }
-			dateStart.tm_sec = 11;
-			dateStart.tm_min = 11;
-			dateStart.tm_hour = 11;
-			dateStart.tm_mday = 11;
-			dateStart.tm_mon = 11;
-			dateStart.tm_year = 11;
-			dateStart.tm_wday = 1;
-			dateStart.tm_yday = 11;
             addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
         }
         printf("%u\n",a++);
@@ -113,7 +105,7 @@ int countDigit(unsigned n)  {
 } 
 
 
-void printQuery1(struct q1 q1, FILE * file, htmlTable html) {
+void printQuery1(query1 q1, FILE * file, htmlTable html) {
     fprintf(file, "%s;%u;%u;%u\n", q1.bikeStation, q1.memberTrips, q1.casualTrips, q1.totalTrips);
     char memberTrips[countDigit(q1.memberTrips)+1];
     char casualTrips[countDigit(q1.casualTrips)+1];
@@ -162,23 +154,22 @@ void printQuery2(query2 q2, FILE * file, htmlTable html) {
 int doQuery2(stationADT sta) {
     FILE * fQuery2 = fopen("query2.csv", "wr");
     if(fQuery2 == NULL){
-		printf("a\n");
         return ERROR;
     }
     htmlTable hQuery2 = newTable("query2.html", 3, "bikeStation", "bikeEndStation", "oldestDateTime");
     if (hQuery2==NULL){
-		printf("b\n");
         return ERROR;
     }
     query2 q2;
     fprintf(fQuery2, "bikeStation;bikeEndStation;oldestDateTime\n");
     start2StaADT(sta);
     while (hasNext2StaADT(sta)) {
-		if(cantViajes(sta)){
+		if(cantViajes(sta)) {
             q2 = next2StaADT(sta);
 			printQuery2(q2, fQuery2, hQuery2);
-		}
-        else next2StaADT(sta);
+		} else {
+            next2StaADT(sta);
+        }
     }
     closeHTMLTable(hQuery2);
     fclose(fQuery2);
@@ -227,9 +218,6 @@ int main(int argc, char const *argv[]) {
     FILE * fileStat = fopen(argv[2], "r");
 
     if (fileBike == NULL || fileStat == NULL) {
-		if(fileStat == NULL){
-			printf("a\n");
-		}
         fprintf(stderr, "Error al abrir archivos\n");
         exit(1);
     }

@@ -98,14 +98,6 @@ int addStaADT(stationADT sta, char * name, unsigned id) {
 }
 
 void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm tEnd, unsigned idEnd, int isMember) {
-    tStart.tm_sec = 12;
-	tStart.tm_min = 12;
-	tStart.tm_hour = 12;
-	tStart.tm_mday = 12;
-	tStart.tm_mon = 2;
-	tStart.tm_wday = 2;
-	tStart.tm_yday = 12;
-
 	
 	tList node = belongsBstADT(sta->bst, idStart);
     if (node == NULL) {
@@ -122,9 +114,8 @@ void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm
     sta->weekStarts[weekdayStart]++;
     int weekdayEnd = WEEKDAY(tEnd.tm_mday,tEnd.tm_mon,tEnd.tm_year);
     sta->weekEnds[weekdayEnd]++;
-		
-	tStart.tm_yday = 12;
-    if ((node->head.oldest.nTime > (t = mktime(&tStart))) || node->head.oldest.nTime == 0) {tStart.tm_sec = 12;
+
+    if ((node->head.oldest.nTime > (t = mktime(&tStart))) || node->head.oldest.nTime == 0) {
         node->head.oldest.nTime = t;
         node->head.oldest.sTime = tStart;
         node->head.oldest.endName = realloc(node->head.oldest.endName, strlen(endNode->head.name)+1);
@@ -201,13 +192,16 @@ int hasNext1StaADT(stationADT sta) {
 
 struct q1 next1StaADT(stationADT sta) {
     if (!hasNext1StaADT(sta)) {
-        fprintf(stderr, "Error: no siguiente en it1\n");
+        query1 ret = {NULL, 0, 0, 0};
+        return ret;
     }
-    struct q1 ret;
+
+    query1 ret;
     ret.bikeStation = sta->arr[sta->itQ1].name;
     ret.memberTrips = sta->arr[sta->itQ1].memberTrips;
     ret.casualTrips = sta->arr[sta->itQ1].totalTrips - sta->arr[sta->itQ1].memberTrips;
     ret.totalTrips = sta->arr[sta->itQ1].totalTrips;
+
     sta->itQ1++;
     return ret;
 }
@@ -220,10 +214,10 @@ int hasNext2StaADT(stationADT sta) {
     return sta->itQ2 != NULL;
 }
 
-struct q2 next2StaADT(stationADT sta) {
+query2 next2StaADT(stationADT sta) {
     if (!hasNext2StaADT(sta)) {
-        fprintf(stderr, "Error: no siguiente en it2\n");
-        exit(1);
+        query2 ret = {NULL, NULL, 0};
+        return ret;
     }
     query2 ret;
     ret.bikeStation = sta->itQ2->head.name;
