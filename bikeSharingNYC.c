@@ -69,7 +69,6 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
     if (getLine(&s, fileBike) == -1) {
         return ERROR;
     }
-    int a =0;
     while (!feof(fileBike)) {
         if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned idStart, idEnd, isMember;
@@ -102,7 +101,6 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
                 }
             }
             addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
-            printf ("%d\n",a++);
         }
     }
     free(s);
