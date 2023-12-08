@@ -6,7 +6,7 @@
 #include <string.h>
 
 #define CANTCOL 2
-#define CANT_CARACTERS_Q2 5
+#define CANT_CARACTERS_Q2 17
 #define BLOQUE 30
 
 int getLine(char ** s, FILE * file) {
@@ -133,10 +133,10 @@ int doQuery1(stationADT sta) {
 }
 
 void printQuery2(query2 q2, FILE * file, htmlTable html) {
-    fprintf(file, "%s;%s;%d/%d/%d %d:%d\n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
-    
-    char fecha[countDigit(q2.oldestDateTime.tm_mday)+countDigit(q2.oldestDateTime.tm_mon)+countDigit(q2.oldestDateTime.tm_year)+countDigit(q2.oldestDateTime.tm_hour)+countDigit(q2.oldestDateTime.tm_min)+CANT_CARACTERS_Q2];
-    sprintf(fecha, "%u/%u/%u %u:%u", q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
+    fprintf(file, "%s;%s;%2d/%2d/%4d %2d:%2d\n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
+
+    char fecha[CANT_CARACTERS_Q2];
+    sprintf(fecha, "%2u/%2u/%4u %2u:%2u", q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
 
     addHTMLRow(html, q2.bikeStation, q2.bikeEndStation, fecha);
     
