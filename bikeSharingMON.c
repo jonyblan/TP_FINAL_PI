@@ -85,6 +85,14 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
                     break;
                 }
             }
+			dateStart.tm_sec = 11;
+			dateStart.tm_min = 11;
+			dateStart.tm_hour = 11;
+			dateStart.tm_mday = 11;
+			dateStart.tm_mon = 11;
+			dateStart.tm_year = 11;
+			dateStart.tm_wday = 1;
+			dateStart.tm_yday = 11;
             addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
         }
         printf("%u\n",a++);
@@ -154,10 +162,12 @@ void printQuery2(query2 q2, FILE * file, htmlTable html) {
 int doQuery2(stationADT sta) {
     FILE * fQuery2 = fopen("query2.csv", "wr");
     if(fQuery2 == NULL){
+		printf("a\n");
         return ERROR;
     }
     htmlTable hQuery2 = newTable("query2.html", 3, "bikeStation", "bikeEndStation", "oldestDateTime");
     if (hQuery2==NULL){
+		printf("b\n");
         return ERROR;
     }
     query2 q2;
@@ -217,6 +227,9 @@ int main(int argc, char const *argv[]) {
     FILE * fileStat = fopen(argv[2], "r");
 
     if (fileBike == NULL || fileStat == NULL) {
+		if(fileStat == NULL){
+			printf("a\n");
+		}
         fprintf(stderr, "Error al abrir archivos\n");
         exit(1);
     }

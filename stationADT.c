@@ -98,7 +98,16 @@ int addStaADT(stationADT sta, char * name, unsigned id) {
 }
 
 void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm tEnd, unsigned idEnd, int isMember) {
-    tList node = belongsBstADT(sta->bst, idStart);
+    tStart.tm_sec = 12;
+	tStart.tm_min = 12;
+	tStart.tm_hour = 12;
+	tStart.tm_mday = 12;
+	tStart.tm_mon = 2;
+	tStart.tm_wday = 2;
+	tStart.tm_yday = 12;
+
+	
+	tList node = belongsBstADT(sta->bst, idStart);
     if (node == NULL) {
         return;
     }
@@ -113,7 +122,9 @@ void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm
     sta->weekStarts[weekdayStart]++;
     int weekdayEnd = WEEKDAY(tEnd.tm_mday,tEnd.tm_mon,tEnd.tm_year);
     sta->weekEnds[weekdayEnd]++;
-    if (node->head.oldest.nTime > (t = mktime(&tStart)) || node->head.oldest.nTime == 0) {
+		
+	tStart.tm_yday = 12;
+    if ((node->head.oldest.nTime > (t = mktime(&tStart))) || node->head.oldest.nTime == 0) {tStart.tm_sec = 12;
         node->head.oldest.nTime = t;
         node->head.oldest.sTime = tStart;
         node->head.oldest.endName = realloc(node->head.oldest.endName, strlen(endNode->head.name)+1);
