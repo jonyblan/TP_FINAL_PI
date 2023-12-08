@@ -163,7 +163,7 @@ void showByWeekDay(char * day, int cantStarted, int cantEnded){
 
 void query3(int diasStart[], int diasEnd[]){
 	printf("\n\n\n\n\n");
-	printf("WeekDay\t;Trips started\t;Trips Ended\t;\n")
+	printf("WeekDay\t;Trips started\t;Trips Ended\t;\n");
 	char * diasSemana[CANT_DIAS_SEMANA] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 	for(int i = 0; i<CANT_DIAS_SEMANA; i++){
 		showByWeekDay(diasSemana[i], diasStart[i], diasEnd[i]);
@@ -211,7 +211,7 @@ int main(int argc, char const *argv[]) {
 	int lineCounterBikes=0;
 
 	// Lee las estaciones
-    while (!feof(file1) && lineCounterStations<linesStations) {
+    /*while (!feof(file1) && lineCounterStations<linesStations) {
         readLine(file1, s);
         token = strtok(s, ";");
         if (token != NULL) {
@@ -237,12 +237,39 @@ int main(int argc, char const *argv[]) {
             }
             lineCounterStations++;
         }
-    }
+    }*/
     
+	while (!feof(file1) && lineCounterStations<linesStations) {
+        readLine(file1, s);
+        token = strtok(s, ";");
+        if (token != NULL) {
+            if (lineCounterStations%BLOQUE == 0) {
+                estaciones = realloc(estaciones, (lineCounterStations + BLOQUE + 1) * sizeof(*estaciones));
+            }
+            for (i = 0; token != NULL; token = strtok(NULL, ";"), i++) {
+                switch (i) {
+                case 0:
+                    sscanf(token, "%d", &(estaciones[lineCounterStations].id));
+                    break;
+                case 1:
+                    estaciones[lineCounterStations].nombre = malloc(strlen(token)+1);
+                    strcpy(estaciones[lineCounterStations].nombre, token);
+                    break;
+                case 2:
+                    sscanf(token, "%g", &(estaciones[lineCounterStations].lat));
+                    break;
+                case 3:
+                    sscanf(token, "%g", &(estaciones[lineCounterStations].lon));
+                    break;
+                }
+            }
+            lineCounterStations++;
+        }
+    }
 
 	// Lee los viajes
-	while (!feof(file2) && lineCounterBikes<linesBikes) {
-		if(lineCounterBikes%1000000 == 0){
+	/*while (!feof(file2) && lineCounterBikes<linesBikes) {
+		if(lineCounterBikes%100000 == 0){
 			printf("%d\n", lineCounterBikes);
 		}
         readLine(file2, s);
@@ -253,24 +280,25 @@ int main(int argc, char const *argv[]) {
             }
 			//started_at;start_station_id;ended_at;end_station_id;rideable_type;member_casual
 			//2022-10-29 14:58:11.000000;513711;2022-10-29 15:23:04.000000;482106;electric_bike;casual
+			struct bikes aux;
             for (i = 0; token != NULL; token = strtok(NULL, ";"), i++) {
                 switch (i) {
 					case 0: // time start
-						sscanf(token, "%ld", &(viajes[lineCounterBikes].timeStart));
+						sscanf(token, "%ld", &(aux.timeStart));
 						//diasStart[getWeekNun(token)]++; // Falta hacer getWeekNum y esta
                     break;
 					case 1: // id station start
-						sscanf(token, "%d", &(viajes[lineCounterBikes].idStart));
+						sscanf(token, "%d", &(aux.idStart));
 					break; 
 					case 2: // time end
-						sscanf(token, "%ld", &(viajes[lineCounterBikes].timeEnd));
+						sscanf(token, "%ld", &(aux.timeEnd));
 						//diasEnd[getWeekNun(token)]++; // Falta hacer getWeekNum y esta
 					break;
 					case 3: // id station end
-						sscanf(token, "%d", &(viajes[lineCounterBikes].idEnd));
+						sscanf(token, "%d", &(aux.idEnd));
 					break;
 					case 5: // membert type
-						sscanf(token, "%c", &(viajes[lineCounterBikes].member));
+						sscanf(token, "%c", &(aux.member));
 					break;
 					default:
 						token = NULL;
@@ -279,13 +307,71 @@ int main(int argc, char const *argv[]) {
             }
 			// Encuentra la cantidad de viajes iniciados casuales y por miembros de cada estacion
 			for(int j = 0; j<=lineCounterStations; j++){
-				if(estaciones[j].id == viajes[lineCounterBikes].idStart){
+				if(estaciones[j].id == aux.idStart){
 					//printf("%c\n", viajes[i].member);
-					if(viajes[lineCounterBikes].member == 'm'){
+					if(aux.member == 'm'){
 						estaciones[j].cantViajesIniciadosMiembros++;
 					}
-					else if(viajes[lineCounterBikes].member == 'c'){
+					else if(aux.member == 'c'){
 						estaciones[j].cantViajesIniciadosCasuales++;
+					}
+				}
+			}
+            lineCounterBikes++;
+        }
+    }*/
+
+	while (!feof(file2) && lineCounterBikes<linesBikes) {
+		if(lineCounterBikes%1000000 == 0){
+			printf("%ld\n", time(NULL) - t);
+			printf("%d\n", lineCounterBikes);
+		}
+        readLine(file2, s);
+        token = strtok(s, ";");
+        if (token != NULL) {
+            if (lineCounterBikes%BLOQUE == 0) {
+                viajes = realloc(viajes, (lineCounterBikes + BLOQUE + 1) * sizeof(*viajes));
+            }
+			//start_date;emplacement_pk_start;end_date;emplacement_pk_end;is_member
+			//2021-05-06 16:44:13;658;2021-05-06 16:51:08;909;1
+			struct bikes aux;
+            for (i = 0; token != NULL; token = strtok(NULL, ";"), i++) {
+                switch (i) {
+					case 0: // time start
+						sscanf(token, "%ld", &(aux.timeStart));
+						//diasStart[getWeekNun(token)]++; // Falta hacer getWeekNum y esta
+                    break;
+					case 1: // id station start
+						sscanf(token, "%d", &(aux.idStart));
+					break; 
+					case 2: // time end
+						sscanf(token, "%ld", &(aux.timeEnd));
+						//diasEnd[getWeekNun(token)]++; // Falta hacer getWeekNum y esta
+					break;
+					case 3: // id station end
+						sscanf(token, "%d", &(aux.idEnd));
+					break;
+					case 4: // membert type
+						sscanf(token, "%c", &(aux.member));
+					break;
+					default:
+						token = NULL;
+					break;
+                }
+            }
+			// Encuentra la cantidad de viajes iniciados casuales y por miembros de cada estacion
+			for(int j = 0; j<=lineCounterStations; j++){
+				if(estaciones[j].id == aux.idStart){
+					if(aux.member == '1'){
+						estaciones[j].cantViajesIniciadosMiembros++;
+					}
+					else if(aux.member == '0'){
+						estaciones[j].cantViajesIniciadosCasuales++;
+					}
+					if(estaciones[j].id != aux.idEnd){
+						if(estaciones[j].timeEarliestTrip > aux.timeStart){
+							// cambia
+						}
 					}
 				}
 			}
@@ -293,11 +379,14 @@ int main(int argc, char const *argv[]) {
         }
     }
 
+
+
+	/**/
 	// inicializa todos los tiempos en un momento en el futuro (todos los viajes son anteriores a iniTime)
-	for(int i = 0; i<lineCounterStations; i++){
+	/*for(int i = 0; i<lineCounterStations; i++){
 		estaciones[i].timeEarliestTrip = iniTime;
 	}
-
+	
 	// No funciona, deberia encontrar el nombre del viaje mas antiguo a cada estaciones[i]
 	for(int i = 1; i<lineCounterStations; i++){ // busco estaciones[i].nameEarliestTrip
 	int flag = 1;
@@ -314,7 +403,7 @@ int main(int argc, char const *argv[]) {
 			}
 		}
 	}
-
+	
 	//for(int i = 0; i<linesStations; i++){
 	//	int flag = 1;
 	//	for(int j = 0; j<linesStations && flag; j++){
@@ -324,7 +413,7 @@ int main(int argc, char const *argv[]) {
 	//		}
 	//	}
 	//}
-
+	*/
 
 	// What to do
 
@@ -333,15 +422,16 @@ int main(int argc, char const *argv[]) {
 	//showStations(estaciones, 1, lineCounterStations); 	// lineCounterStations
 
 	// Query 1 ANDA
-    QuickSortStationsByViajes(estaciones , 0 , lineCounterStations);
-	query1(estaciones, 0, lineCounterStations);
+    printf("%ld\n", time(NULL) - t);
+    QuickSortStationsByViajes(estaciones , 0 , lineCounterStations-1);
+	query1(estaciones, 0, lineCounterStations-1);
 
 	// Query 2 FALTA
-	QuickSortStationsByName(estaciones , 0 , lineCounterStations);
-	query2(estaciones, 0, lineCounterStations, iniTime);
+	//QuickSortStationsByName(estaciones , 0 , lineCounterStations);
+	//query2(estaciones, 0, lineCounterStations, iniTime);
 
 	// Query 3 FALTA
-	query3(diasStart, diasEnd);
+	//query3(diasStart, diasEnd);
     
     printf("%ld\n", time(NULL) - t);
 
