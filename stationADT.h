@@ -52,7 +52,7 @@ int start1StaADT(stationADT sta);
 int hasNext1StaADT(stationADT sta);
 
 // devuelve el siguiente y aumenta el iterador de la query1
-query1 * next1StaADT(stationADT sta);
+query1 next1StaADT(stationADT sta);
 
 // inicia el iterador para la query2
 void start2StaADT(stationADT sta);
@@ -61,7 +61,7 @@ void start2StaADT(stationADT sta);
 int hasNext2StaADT(stationADT sta);
 
 // devuelve el siguiente y aumenta el iterador de la query1
-query2 * next2StaADT(stationADT sta);
+query2 next2StaADT(stationADT sta);
 
 // devuelve la informacion necesaria para la query3
 query3 query3StaADT(stationADT sta);
