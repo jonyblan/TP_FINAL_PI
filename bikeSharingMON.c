@@ -105,9 +105,9 @@ int countDigit(unsigned n)  {
 
 void printQuery1(struct q1 q1, FILE * file, htmlTable html) {
     fprintf(file, "%s;%u;%u;%u\n", q1.bikeStation, q1.memberTrips, q1.casualTrips, q1.totalTrips);
-    char memberTrips[countDigit(q1.memberTrips)];
-    char casualTrips[countDigit(q1.casualTrips)];
-    char totalTrips[countDigit(q1.totalTrips)];
+    char memberTrips[countDigit(q1.memberTrips)+1];
+    char casualTrips[countDigit(q1.casualTrips)+1];
+    char totalTrips[countDigit(q1.totalTrips)+1];
     sprintf(memberTrips, "%u", q1.memberTrips);
     sprintf(casualTrips, "%u", q1.casualTrips);
     sprintf(totalTrips, "%u", q1.totalTrips);
@@ -135,11 +135,11 @@ int doQuery1(stationADT sta) {
 void printQuery2(query2 q2, FILE * file, htmlTable html) {
     fprintf(file, "%s;%s;%d/%d/%d %d:%d\n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
     
-    char day[countDigit(q2.oldestDateTime.tm_mday)];
-    char mon[countDigit(q2.oldestDateTime.tm_mon)];
-    char year[countDigit(q2.oldestDateTime.tm_year)];
-    char hour[countDigit(q2.oldestDateTime.tm_hour)];
-    char min[countDigit(q2.oldestDateTime.tm_min)];
+    char day[countDigit(q2.oldestDateTime.tm_mday)+1];
+    char mon[countDigit(q2.oldestDateTime.tm_mon)+1];
+    char year[countDigit(q2.oldestDateTime.tm_year)+1];
+    char hour[countDigit(q2.oldestDateTime.tm_hour)+1];
+    char min[countDigit(q2.oldestDateTime.tm_min)+1];
     sprintf(day, "%u", q2.oldestDateTime.tm_mday);
     sprintf(mon, "%u", q2.oldestDateTime.tm_mon);
     sprintf(year, "%u", q2.oldestDateTime.tm_year);
@@ -155,7 +155,7 @@ int doQuery2(stationADT sta) {
     if(fQuery2 == NULL){
         return ERROR;
     }
-    htmlTable hQuery2 = newTable("query2.html", "bikeStation", "bikeEndStation", "oldestDateTime");
+    htmlTable hQuery2 = newTable("query2.html", 3, "bikeStation", "bikeEndStation", "oldestDateTime");
     if (hQuery2==NULL){
         return ERROR;
     }
@@ -173,15 +173,15 @@ int doQuery2(stationADT sta) {
 }
 
 
-void printQuery3(query3 q3, FILE * file, htmlTable html, int i, char * diasSemana) {
-    fprintf(file, "%s;%d;%d\n", diasSemana[i], q3.arr[i].startedTrips, q3.arr[i].endedTrips);
+void printQuery3(query3 q3, FILE * file, htmlTable html, int i, char * dia) {
+    fprintf(file, "%s;%u;%u\n", dia, q3.arr[i].startedTrips, q3.arr[i].endedTrips);
     
-    char started[countDigit(q3.arr[i].startedTrips)];
-    char ended[countDigit(q3.arr[i].endedTrips)];
+    char started[countDigit(q3.arr[i].startedTrips)+1];
+    char ended[countDigit(q3.arr[i].endedTrips)+1];
     sprintf(started, "%u", q3.arr[i].startedTrips);
     sprintf(ended, "%u", q3.arr[i].endedTrips);
 
-    addHTMLRow(html, diasSemana[i], q3.arr[i].startedTrips, q3.arr[i].endedTrips);
+    addHTMLRow(html, dia, started, ended);
 }
 
 int doQuery3(stationADT sta) {
@@ -197,8 +197,7 @@ int doQuery3(stationADT sta) {
     fprintf(fQuery3, "weekDay;startedTrips;endedTrips\n");
     char * diasSemana[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     for (int i = 0; i < T_DAYS; i++) {
-        fprintf(fQuery3, "%s;%u;%u\n", diasSemana[i], q3.arr[i].startedTrips, q3.arr[i].endedTrips);
-        printQuery3(q3, fQuery3,hQuery3, i, diasSemana);
+        printQuery3(q3, fQuery3, hQuery3, i, diasSemana[i]);
     }
     closeHTMLTable(hQuery3);
     fclose(fQuery3);
