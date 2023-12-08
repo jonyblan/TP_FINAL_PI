@@ -53,7 +53,7 @@ stationADT newStaADT(void) {
     stationADT new = calloc(1, sizeof(struct stationCDT));
     if (new == NULL) {
         fprintf(stderr, "Error: no se pudo crear stationADT\n");
-        exit(1);
+        return NULL;
     }
     for (int i = MON; i < T_DAYS; i++) {
         new->weekStarts[i] = 0;
@@ -69,12 +69,12 @@ tList addListRec(tList l, char * name, unsigned len, tList * added) {
         tList newNode = calloc(1, sizeof(*newNode));
         if (newNode == NULL) {
             fprintf(stderr, "Error: no se pudo agregar un nuevo nodo a la lista\n");
-            exit(1);
+            return NULL;
         }
         newNode->head.name = malloc(len+1);
         if (newNode->head.name == NULL) {
             fprintf(stderr, "Error: no se pudo almacenar el nombre de un nuevo nodo a la lista\n");
-            exit(1);
+            return NULL;
         }
         strcpy(newNode->head.name, name);
         newNode->alphaTail = l;
@@ -85,15 +85,16 @@ tList addListRec(tList l, char * name, unsigned len, tList * added) {
     return l;
 }
 
-void addStaADT(stationADT sta, char * name, unsigned id) {
+int addStaADT(stationADT sta, char * name, unsigned id) {
     tList added = NULL;
     sta->list = addListRec(sta->list, name, strlen(name), &added);
     if (added == NULL) {
         fprintf(stderr, "Error: no se pudo agregar un nuevo nodo a la lista(2)\n");
-        exit(1);
+        return ERROR;
     }
     insertBstADT(sta->bst, id, added);
     sta->dim++;
+    return OK;
 }
 
 void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm tEnd, unsigned idEnd, int isMember) {
@@ -125,6 +126,9 @@ void freePostReadStaADT(stationADT sta) {
 
 static struct countTrips * listToArr(tList l, unsigned dim) {
     struct countTrips * ret = malloc(dim * sizeof(*ret));
+    if (ret == NULL) {
+        return NULL;
+    }
     for (int i = 0; i < dim; i++) {
         ret[i].memberTrips = l->head.memberTrips;
         ret[i].totalTrips = l->head.memberTrips + l->head.casualTrips;
@@ -134,25 +138,66 @@ static struct countTrips * listToArr(tList l, unsigned dim) {
     return ret;
 }
 
-void start1StaADT(stationADT sta) {
+static int partitionStationsByViajes(struct countTrips array[] , unsigned low , unsigned high) {
+    int pivot = array[high].totalTrips;
+	char * pivot2 = array[high].name;
+    int i = (low - 1);
+    for(int j = low ; j<high ; j++){
+        if(array[j].totalTrips < pivot){
+            i++;
+            struct countTrips temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+		if(array[j].totalTrips == pivot){
+			if(strcasecmp(array[j].name, pivot2) < 0){
+				i++;
+				struct countTrips temp = array[i];
+				array[i] = array[j];
+				array[j] = temp;
+			}
+		}
+    }
+    struct countTrips temp = array[i + 1];
+    array[i + 1] = array[high];
+    array[high] = temp;
+    return (i + 1);
+
+}
+
+static void QuickSortStationsByViajes(struct countTrips *array , int low , int high){
+    if (low < high){
+        int Pi = partitionStationsByViajes(array , low , high);
+        QuickSortStationsByViajes(array , low , Pi -1);
+        QuickSortStationsByViajes(array , Pi + 1 , high);
+    }
+}
+
+int start1StaADT(stationADT sta) {
     sta->arr = listToArr(sta->list, sta->dim);
+    if (sta->arr == NULL) {
+        return ERROR;
+    }
+    QuickSortStationsByViajes(sta->arr, 0, sta->dim - 1);
     sta->itQ1 = 0;
+    return OK;
 }
 
 int hasNext1StaADT(stationADT sta) {
     return sta->itQ1 < sta->dim;
 }
 
-query1 next1StaADT(stationADT sta) {
+struct q1 * next1StaADT(stationADT sta) {
     if (!hasNext1StaADT(sta)) {
         fprintf(stderr, "Error: no siguiente en it1\n");
-        exit(1);
+        return NULL;
     }
-    query1 ret;
-    ret.bikeStation = sta->arr[sta->itQ1].name;
-    ret.memberTrips = sta->arr[sta->itQ1].memberTrips;
-    ret.casualTrips = sta->arr[sta->itQ1].totalTrips - sta->arr[sta->itQ1].memberTrips;
-    ret.totalTrips = sta->arr[sta->itQ1].totalTrips;
+    struct q1 * ret = malloc(sizeof(*ret));
+    ret->bikeStation = sta->arr[sta->itQ1].name;
+    ret->memberTrips = sta->arr[sta->itQ1].memberTrips;
+    ret->casualTrips = sta->arr[sta->itQ1].totalTrips - sta->arr[sta->itQ1].memberTrips;
+    ret->totalTrips = sta->arr[sta->itQ1].totalTrips;
+    sta->itQ1++;
     return ret;
 }
 
@@ -164,15 +209,16 @@ int hasNext2StaADT(stationADT sta) {
     return sta->itQ2 != NULL;
 }
 
-query2 next2StaADT(stationADT sta) {
+struct q2 * next2StaADT(stationADT sta) {
     if (!hasNext2StaADT(sta)) {
         fprintf(stderr, "Error: no siguiente en it2\n");
-        exit(1);
+        return NULL;
     }
-    query2 ret;
-    ret.bikeStation = sta->itQ2->head.name;
-    ret.bikeEndStation = sta->itQ2->head.oldest.endName;
-    ret.oldestDateTime = sta->itQ2->head.oldest.sTime;
+    query2 * ret = malloc(sizeof(*ret));
+    ret->bikeStation = sta->itQ2->head.name;
+    ret->bikeEndStation = sta->itQ2->head.oldest.endName;
+    ret->oldestDateTime = sta->itQ2->head.oldest.sTime;
+    sta->itQ2 = sta->itQ2->alphaTail;
     return ret;
 }
 
@@ -205,7 +251,6 @@ void a(stationADT sta) {
     for (int i = 0; i < sta->dim; i++) {
         printf("%d\t;%s\n", sta->arr[i].totalTrips, sta->arr[i].name);
     }
-    
 }
 
 // NO PONER LOS EXIT AFUERA

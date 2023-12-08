@@ -4,6 +4,9 @@
 #include <time.h>
 
 #define T_DAYS 7
+#define ERROR -1
+#define OK 0
+
 enum DIAS {MON = 0, TUE, WED, THU, FRI, SAT, SUN};
 
 typedef struct stationCDT * stationADT;
@@ -34,7 +37,7 @@ typedef struct q3 {
 stationADT newStaADT(void);
 
 // agrega una nueva estacion a las estructuras
-void addStaADT(stationADT sta, char * name, unsigned id);
+int addStaADT(stationADT sta, char * name, unsigned id);
 
 // agrega un viaje ya con toda la informacion necesaria a las estructuras
 void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm tEnd, unsigned idEnd, int isMember);
@@ -43,13 +46,13 @@ void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm
 void freePostReadStaADT(stationADT sta);
 
 // prepara las estructuras para poder realizar la query1 e inicia el iterador para la query1
-void start1StaADT(stationADT sta);
+int start1StaADT(stationADT sta);
 
 // verifica que haya proximo para la query1
 int hasNext1StaADT(stationADT sta);
 
 // devuelve el siguiente y aumenta el iterador de la query1
-query1 next1StaADT(stationADT sta);
+query1 * next1StaADT(stationADT sta);
 
 // inicia el iterador para la query2
 void start2StaADT(stationADT sta);
@@ -58,7 +61,7 @@ void start2StaADT(stationADT sta);
 int hasNext2StaADT(stationADT sta);
 
 // devuelve el siguiente y aumenta el iterador de la query1
-query2 next2StaADT(stationADT sta);
+query2 * next2StaADT(stationADT sta);
 
 // devuelve la informacion necesaria para la query3
 query3 query3StaADT(stationADT sta);

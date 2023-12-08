@@ -10,30 +10,27 @@
 int getLine(char ** s, FILE * file) {
     size_t w = 0;
     char c;
-
     while ((c = fgetc(file)) != EOF && c != '\n') {
         if (w%BLOQUE == 0) {
             *s = realloc(*s, (w + BLOQUE + 1));
             if (*s == NULL) {
-                return -1;
+                return ERROR;
             }
         }
         (*s)[w++] = c;
     }
-
     (*s)[w] = '\0';
-    return 1;
+    return OK;
 }
 
-void readStatFile(FILE * fileBike, stationADT station) {
+int readStatFile(FILE * fileStat, stationADT station) {
     char * s = NULL;
     char * token;
-    if (getLine(&s, fileBike) == -1) {
-        fprintf(stderr, "Error al leer archivo\n");
-        exit(1);
+    if (getLine(&s, fileStat) == ERROR) {
+        return ERROR;
     }
-    while (!feof(fileBike)) {
-        if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
+    while (!feof(fileStat)) {
+        if ((getLine(&s, fileStat)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned id;
             for (int i = 0; token != NULL && i < CANTCOL; token = strtok(NULL, ";"), i++) {
                 switch (i) {
@@ -44,21 +41,21 @@ void readStatFile(FILE * fileBike, stationADT station) {
                     addStaADT(station, token, id);
                     break;
                 default:
-                    fprintf(stderr, "Error en switch de lectura de stations\n");
-                    exit(1);
+                    return ERROR;
                     break;
                 }
             }
         }
     }
+    free(s);
+    return OK;
 }
 
-void readBikeFile(FILE * fileBike, stationADT stations) {
+int readBikeFile(FILE * fileBike, stationADT stations) {
     char * s = NULL;
     char * token;
-    if (getLine(&s, fileBike) == -1) {
-        fprintf(stderr, "Error al leer archivo\n");
-        exit(1);
+    if (getLine(&s, fileBike) == ERROR) {
+        return ERROR;
     }
     while (!feof(fileBike)) {
         if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
@@ -82,43 +79,125 @@ void readBikeFile(FILE * fileBike, stationADT stations) {
                     sscanf(token, "%d", &isMember);
                     break;
                 default:
-                    fprintf(stderr, "Error en switch de lectura de stations\n");
-                    exit(1);
+                    return ERROR;
                     break;
                 }
             }
             addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
         }
     }
+    free(s);
+    return OK;
+}
+
+void printQuery1(struct q1 q1, FILE * file) {
+    fprintf(file, "%s;%u;%u;%u\n", q1.bikeStation, q1.memberTrips, q1.casualTrips, q1.totalTrips);
+}
+
+int doQuery1(stationADT sta) {
+    FILE * fQuery1 = fopen("query1.csv", "wr");
+    if(fQuery1 == NULL){
+        return ERROR;
+    }
+    struct q1 * q1;
+    fprintf(fQuery1, "bikeStation;memberTrips;casualTrips;allTrips\n");
+    while (hasNext1StaADT(sta)) {
+        q1 = next1StaADT;
+        printQuery1(*q1, fQuery1);
+        // FALTA HTML
+    }
+    free(q1);
+    return OK;
+}
+
+void printQuery2(query2 q2, FILE * file) {
+    fprintf(file, "%s;%s;%d/%d/%d %d:%d", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
+}
+
+int doQuery2(stationADT sta) {
+    FILE * fQuery2 = fopen("query2.csv", "wr");
+    if(fQuery2 == NULL){
+        return ERROR;
+    }
+    query2 * q2;
+    fprintf(fQuery2, "bikeStation;bikeEndStation;oldestDateTime\n");
+    start2StaADT(sta);
+    while (hasNext2StaADT(sta)) {
+        q2 = next2StaADT(sta);
+        printQuery2(*q2, fQuery2);
+        // FALTA HTML
+    }
+    free(q2);
+    return OK;
+}
+
+int doQuery3(stationADT sta) {
+    FILE * fQuery3 = fopen("query3.csv", "wr");
+    if (fQuery3 == NULL) {
+        return ERROR;
+    }
+    query3 q3 = query3StaADT(sta);
+    fprintf(fQuery3, "weekDay;startedTrips;endedTrips\n");
+    char * diasSemana[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    for (int i = 0; i < T_DAYS; i++) {
+        fprintf(fQuery3, "%s;%u;%u\n", diasSemana[i], q3.arr[i].startedTrips, q3.arr[i].endedTrips);
+        // FALTA HTML
+    }
+    return OK;
 }
 
 int main(int argc, char const *argv[]) {
     if (argc != 3) {
-        fprintf(stderr, "Cantidad de parámetros erronea\n");
-        exit(1);
-    }
-    if (strcmp(argv[1], "bikesMON.csv") != 0 || strcmp(argv[2], "stationsMON.csv") != 0) {
-        fprintf(stderr, "Archivos pasados incorrectos\n");
+        fprintf(stderr, "Error: cantidad de parámetros erronea\n");
         exit(1);
     }
     time_t t = time(NULL);
     FILE * fileBike = fopen(argv[1], "r");
     FILE * fileStat = fopen(argv[2], "r");
 
+    if (fileBike == NULL || fileStat == NULL) {
+        fprintf(stderr, "Error al abrir archivos\n");
+        exit(1);
+    }
+
     stationADT stations = newStaADT();
+    if (stations == NULL) {
+        fprintf(stderr, "Error al crear TAD\n");
+    }
     
-    readStatFile(fileStat, stations);
+    if (readStatFile(fileStat, stations) == ERROR) {
+        fprintf(stderr, "Error al leer archivo de estaciones\n");
+        exit(1);
+    }
     
-    readBikeFile(fileBike, stations);
+    if (readBikeFile(fileBike, stations) == ERROR) {
+        fprintf(stderr, "Error al leer archivo de viajes\n");
+        exit(1);
+    }
 
     freePostReadStaADT(stations);
 
-    query3 q3 = query3StaADT(stations);
-
-    printf("Query3:\n");
-    for (int i = 0; i < T_DAYS; i++) {
-        printf("%d: %d\t; %d\t\n", i, q3.arr[i].startedTrips, q3.arr[i].endedTrips);
+    if (start1StaADT(stations) == ERROR) {
+        fprintf(stderr, "Error al iniciar proceso de query1\n");
+        exit(1);
     }
+
+    // if (doQuery1(stations) == ERROR) {
+    //     fprintf(stderr, "Error al procesar query1\n");
+    //     exit(1);
+    // }
+
+    if (doQuery2(stations) == ERROR) {
+        fprintf(stderr, "Error al procesar query2\n");
+        exit(1);
+    }
+
+    if (doQuery3(stations) == ERROR) {
+        fprintf(stderr, "Error al procesar query3\n");
+        exit(1);
+    }
+
+    freeEndStaADT(stations);
 
     printf("Tiempo: %ld segundos\n", time(NULL)-t);
     return 0;
