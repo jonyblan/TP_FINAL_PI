@@ -59,3 +59,14 @@ for(int i=0; i<T_DAYS; i++){
     query3 q3=query3StaADT(sta);
     fprintf(pQuery3,"%s;%d;%d \n",diasSemana[i],query3->q3_arr[i].startedTrips,query3->q3_arr[i].endedTrips);
 }
+
+
+esto es para iniciar
+htmlTable htmlQ2= newTable("query2.html",COLQ2,"bikeStation","bikeEndStation","oldestDateTime" );
+
+en cada iter:
+
+addHTMLRow(htmlQ2,"%s;%s;%d/%d/%d %d:%d\n",que2->itQ2->bikeStation, que2->itQ2->bikeEndStation, que2->itQ2->oldestDateTime.tm_year,que2->itQ2->oldestDateTime.tm_mon,que2->itQ2->oldestDateTime.tm_mday,que2->itQ2->oldestDateTime.tm_hour,que2->itQ2->oldestDateTime.tm_min);
+
+donde termina: 
+closeHTMLTable(htmlQ2);
