@@ -133,10 +133,10 @@ int doQuery1(stationADT sta) {
 }
 
 void printQuery2(query2 q2, FILE * file, htmlTable html) {
-    fprintf(file, "%s;%s;%2d/%2d/%4d %2d:%2d\n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
+    fprintf(file, "%s;%s;%02d/%02d/%04d %02d:%02d\n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
 
     char fecha[CANT_CARACTERS_Q2];
-    sprintf(fecha, "%2u/%2u/%4u %2u:%2u", q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
+    sprintf(fecha, "%02u/%02u/%04u %02u:%02u", q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
 
     addHTMLRow(html, q2.bikeStation, q2.bikeEndStation, fecha);
     
