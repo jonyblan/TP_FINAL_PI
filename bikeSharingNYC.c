@@ -9,7 +9,7 @@
 #define COLQ1 4
 #define COLQ2 3
 #define COLQ3 3
-#define BLOQUE 100
+#define BLOQUE 50
 
 int getLine(char ** s, FILE * file) {
     size_t w = 0;
@@ -71,7 +71,6 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
     }
     int a =0;
     while (!feof(fileBike)) {
-
         if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned idStart, idEnd, isMember;
             struct tm dateStart, dateEnd;
@@ -124,12 +123,14 @@ int countDigit(unsigned n)  {
 
 void printQuery1(struct q1 q1, FILE * file, htmlTable html) {
     fprintf(file, "%s;%u;%u;%u\n", q1.bikeStation, q1.memberTrips, q1.casualTrips, q1.totalTrips);
+
     char memberTrips[countDigit(q1.memberTrips)+1];
     char casualTrips[countDigit(q1.casualTrips)+1];
     char totalTrips[countDigit(q1.totalTrips)+1];
     sprintf(memberTrips, "%u", q1.memberTrips);
     sprintf(casualTrips, "%u", q1.casualTrips);
     sprintf(totalTrips, "%u", q1.totalTrips);
+
     addHTMLRow(html, q1.bikeStation, memberTrips, casualTrips, totalTrips);
 }
 
@@ -139,13 +140,12 @@ int doQuery1(stationADT sta) {
         return ERROR;
     }
     htmlTable hQuery1 = newTable("query1.html", 4, "bikeStation", "memberTrips", "casualTrips", "allTrips");
-    query1 * q1;
+    query1 q1;
     fprintf(fQuery1, "bikeStation;memberTrips;casualTrips;allTrips\n");
     while (hasNext1StaADT(sta)) {
         q1 = next1StaADT(sta);
-        printQuery1(*q1, fQuery1, hQuery1);
+        printQuery1(q1, fQuery1, hQuery1);
     }
-    free(q1);
     closeHTMLTable(hQuery1);
     fclose(fQuery1);
     
@@ -178,14 +178,14 @@ int doQuery2(stationADT sta) {
     if (hQuery2==NULL){
         return ERROR;
     }
-    query2 * q2;
+    query2 q2;
     fprintf(fQuery2, "bikeStation;bikeEndStation;oldestDateTime\n");
     start2StaADT(sta);
     while (hasNext2StaADT(sta)) {
         q2 = next2StaADT(sta);
-        printQuery2(*q2, fQuery2, hQuery2);
+        printQuery2(q2, fQuery2, hQuery2);
     }
-    free(q2);
+    
     closeHTMLTable(hQuery2);
     fclose(fQuery2);
     

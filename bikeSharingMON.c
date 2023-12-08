@@ -36,7 +36,7 @@ int readStatFile(FILE * fileStat, stationADT station) {
             for (int i = 0; token != NULL && i < CANTCOL; token = strtok(NULL, ";"), i++) {
                 switch (i) {
                 case 0:
-                    sscanf(token, "%d", &id);
+                    sscanf(token, "%u", &id);
                     break;
                 case 1:
                     addStaADT(station, token, id);
@@ -58,6 +58,7 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
     if (getLine(&s, fileBike) == ERROR) {
         return ERROR;
     }
+    int a=0;
     while (!feof(fileBike)) {
         if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned idStart, idEnd, isMember;
@@ -68,16 +69,16 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
                     sscanf(token, "%d-%d-%d %d:%d:%d", &(dateStart.tm_year), &(dateStart.tm_mon), &(dateStart.tm_mday), &(dateStart.tm_hour), &(dateStart.tm_min), &(dateStart.tm_sec));
                     break;
                 case 1:
-                    sscanf(token, "%d", &idStart);
+                    sscanf(token, "%u", &idStart);
                     break;
                 case 2:
                     sscanf(token, "%d-%d-%d %d:%d:%d", &(dateEnd.tm_year), &(dateEnd.tm_mon), &(dateEnd.tm_mday), &(dateEnd.tm_hour), &(dateEnd.tm_min), &(dateEnd.tm_sec));
                     break;
                 case 3:
-                    sscanf(token, "%d", &idEnd);
+                    sscanf(token, "%u", &idEnd);
                     break;
                 case 4:
-                    sscanf(token, "%d", &isMember);
+                    sscanf(token, "%u", &isMember);
                     break;
                 default:
                     return ERROR;
@@ -86,6 +87,7 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
             }
             addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
         }
+        printf("%u\n",a++);
     }
     free(s);
     return OK;
@@ -120,15 +122,14 @@ int doQuery1(stationADT sta) {
         return ERROR;
     }
     htmlTable hQuery1 = newTable("query1.html", 4, "bikeStation", "memberTrips", "casualTrips", "allTrips");
-    query1 * q1;
+    query1 q1;
     fprintf(fQuery1, "bikeStation;memberTrips;casualTrips;allTrips\n");
     while (hasNext1StaADT(sta)) {
         q1 = next1StaADT(sta);
-        printQuery1(*q1, fQuery1, hQuery1);
+        printQuery1(q1, fQuery1, hQuery1);
     }
     closeHTMLTable(hQuery1);
     fclose(fQuery1);
-    free(q1);
     return OK;
 }
 
@@ -159,16 +160,15 @@ int doQuery2(stationADT sta) {
     if (hQuery2==NULL){
         return ERROR;
     }
-    query2 * q2;
+    query2 q2;
     fprintf(fQuery2, "bikeStation;bikeEndStation;oldestDateTime\n");
     start2StaADT(sta);
     while (hasNext2StaADT(sta)) {
         q2 = next2StaADT(sta);
-        printQuery2(*q2, fQuery2, hQuery2);
+        printQuery2(q2, fQuery2, hQuery2);
     }
     closeHTMLTable(hQuery2);
     fclose(fQuery2);
-    free(q2);
     return OK;
 }
 
