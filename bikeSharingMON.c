@@ -126,12 +126,27 @@ int doQuery1(stationADT sta) {
         q1 = next1StaADT(sta);
         printQuery1(*q1, fQuery1, hQuery1);
     }
+    closeHTMLTable(hQuery1);
+    fclose(fQuery1);
     free(q1);
     return OK;
 }
 
 void printQuery2(query2 q2, FILE * file, htmlTable html) {
     fprintf(file, "%s;%s;%d/%d/%d %d:%d\n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
+    
+    char day[countDigit(q2.oldestDateTime.tm_mday)];
+    char mon[countDigit(q2.oldestDateTime.tm_mon)];
+    char year[countDigit(q2.oldestDateTime.tm_year)];
+    char hour[countDigit(q2.oldestDateTime.tm_hour)];
+    char min[countDigit(q2.oldestDateTime.tm_min)];
+    sprintf(day, "%u", q2.oldestDateTime.tm_mday);
+    sprintf(mon, "%u", q2.oldestDateTime.tm_mon);
+    sprintf(year, "%u", q2.oldestDateTime.tm_year);
+    sprintf(hour, "%u", q2.oldestDateTime.tm_hour);
+    sprintf(min, "%u", q2.oldestDateTime.tm_min);
+
+    addHTMLRow(html, q2.bikeStation, q2.bikeEndStation, day, mon,year,hour,min);
     
 }
 
@@ -141,16 +156,32 @@ int doQuery2(stationADT sta) {
         return ERROR;
     }
     htmlTable hQuery2 = newTable("query2.html", "bikeStation", "bikeEndStation", "oldestDateTime");
+    if (hQuery2==NULL){
+        return ERROR;
+    }
     query2 * q2;
     fprintf(fQuery2, "bikeStation;bikeEndStation;oldestDateTime\n");
     start2StaADT(sta);
     while (hasNext2StaADT(sta)) {
         q2 = next2StaADT(sta);
         printQuery2(*q2, fQuery2, hQuery2);
-        // FALTA HTML
     }
+    closeHTMLTable(hQuery2);
+    fclose(fQuery2);
     free(q2);
     return OK;
+}
+
+
+void printQuery3(query3 q3, FILE * file, htmlTable html, int i, char * diasSemana) {
+    fprintf(file, "%s;%d;%d\n", diasSemana[i], q3.arr[i].startedTrips, q3.arr[i].endedTrips);
+    
+    char started[countDigit(q3.arr[i].startedTrips)];
+    char ended[countDigit(q3.arr[i].endedTrips)];
+    sprintf(started, "%u", q3.arr[i].startedTrips);
+    sprintf(ended, "%u", q3.arr[i].endedTrips);
+
+    addHTMLRow(html, diasSemana[i], q3.arr[i].startedTrips, q3.arr[i].endedTrips);
 }
 
 int doQuery3(stationADT sta) {
@@ -159,12 +190,18 @@ int doQuery3(stationADT sta) {
         return ERROR;
     }
     query3 q3 = query3StaADT(sta);
+    htmlTable hQuery3 = newTable("query3.html", 3, "weekDay", "startedTrips", "endedTrips");
+    if (hQuery3==NULL){
+        return ERROR;
+    }
     fprintf(fQuery3, "weekDay;startedTrips;endedTrips\n");
     char * diasSemana[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     for (int i = 0; i < T_DAYS; i++) {
         fprintf(fQuery3, "%s;%u;%u\n", diasSemana[i], q3.arr[i].startedTrips, q3.arr[i].endedTrips);
-        // FALTA HTML
+        printQuery3(q3, fQuery3,hQuery3, i, diasSemana);
     }
+    closeHTMLTable(hQuery3);
+    fclose(fQuery3);
     return OK;
 }
 
