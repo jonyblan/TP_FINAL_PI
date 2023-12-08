@@ -53,7 +53,6 @@ struct stationCDT {
 stationADT newStaADT(void) {
     stationADT new = calloc(1, sizeof(struct stationCDT));
     if (new == NULL) {
-        fprintf(stderr, "Error: no se pudo crear stationADT\n");
         return NULL;
     }
     for (int i = MON; i < T_DAYS; i++) {
@@ -69,12 +68,10 @@ tList addListRec(tList l, char * name, unsigned len, tList * added) {
     if (l == NULL || (c = strcasecmp(l->head.name, name)) > 0) {
         tList newNode = calloc(1, sizeof(*newNode));
         if (newNode == NULL) {
-            fprintf(stderr, "Error: no se pudo agregar un nuevo nodo a la lista\n");
             return NULL;
         }
         newNode->head.name = malloc(len+1);
         if (newNode->head.name == NULL) {
-            fprintf(stderr, "Error: no se pudo almacenar el nombre de un nuevo nodo a la lista\n");
             return NULL;
         }
         strcpy(newNode->head.name, name);
@@ -90,7 +87,6 @@ int addStaADT(stationADT sta, char * name, unsigned id) {
     tList added = NULL;
     sta->list = addListRec(sta->list, name, strlen(name), &added);
     if (added == NULL) {
-        fprintf(stderr, "Error: no se pudo agregar un nuevo nodo a la lista(2)\n");
         return ERROR;
     }
     insertBstADT(sta->bst, id, added);
@@ -111,10 +107,6 @@ void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm
     }
     tStart.tm_isdst = -1;
     isMember ? node->head.memberTrips++ : node->head.casualTrips++;
-    int weekdayStart = WEEKDAY(tStart.tm_mday,tStart.tm_mon,tStart.tm_year);
-    sta->weekStarts[weekdayStart]++;
-    int weekdayEnd = WEEKDAY(tEnd.tm_mday,tEnd.tm_mon,tEnd.tm_year);
-    sta->weekEnds[weekdayEnd]++;
 
     if ((node->head.oldest.nTime > (t = mktime(&tStart))) || node->head.oldest.nTime == 0) {
         node->head.oldest.nTime = t;
@@ -122,6 +114,10 @@ void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm
         node->head.oldest.endName = realloc(node->head.oldest.endName, strlen(endNode->head.name)+1);
         strcpy(node->head.oldest.endName, endNode->head.name);
     }
+    int weekdayStart = WEEKDAY(tStart.tm_mday,tStart.tm_mon,tStart.tm_year);
+    sta->weekStarts[weekdayStart]++;
+    int weekdayEnd = WEEKDAY(tEnd.tm_mday,tEnd.tm_mon,tEnd.tm_year);
+    sta->weekEnds[weekdayEnd]++;
 }
 
 void freePostReadStaADT(stationADT sta) {
@@ -147,7 +143,7 @@ static int partitionStationsByViajes(struct countTrips array[] , unsigned low , 
 	char * pivot2 = array[high].name;
     int i = (low - 1);
     for(int j = low ; j<high ; j++){
-        if(array[j].totalTrips < pivot){
+        if(array[j].totalTrips > pivot){
             i++;
             struct countTrips temp = array[i];
             array[i] = array[j];
@@ -217,7 +213,7 @@ int hasNext2StaADT(stationADT sta) {
 
 query2 next2StaADT(stationADT sta) {
     if (!hasNext2StaADT(sta)) {
-        query2 ret = ;
+        query2 ret = NULL_QU2;
         return ret;
     }
     query2 ret;

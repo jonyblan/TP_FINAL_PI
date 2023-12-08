@@ -85,8 +85,9 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
                     break;
                 }
             }
-            if(idStart!=idEnd)
+            if (idStart != idEnd) {
                 addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
+            }
         }
     }
     free(s);
