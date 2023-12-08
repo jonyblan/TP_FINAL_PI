@@ -69,6 +69,9 @@ query3 query3StaADT(stationADT sta);
 // libera todos los recursos utilizados por el ADT
 void freeEndStaADT(stationADT sta);
 
+// retorna la cantidad de viajes en el iterador
+int cantViajes(stationADT sta);
+
 void a(stationADT sta);
 
 #endif

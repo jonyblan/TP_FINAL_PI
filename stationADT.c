@@ -231,6 +231,10 @@ query3 query3StaADT(stationADT sta) {
     return ret;
 }
 
+int cantViajes(stationADT sta){
+	return (sta->itQ2->head.casualTrips+sta->itQ2->head.memberTrips);
+}
+
 static void freeListRec(tList l) {
     if (l == NULL) {
         return;
