@@ -154,19 +154,10 @@ int doQuery1(stationADT sta) {
 void printQuery2(query2 q2, FILE * file, htmlTable html) {
     fprintf(file, "%s;%s;%d/%d/%d %d:%d\n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
     
-    char day[countDigit(q2.oldestDateTime.tm_mday)+1];
-    char mon[countDigit(q2.oldestDateTime.tm_mon)+1];
-    char year[countDigit(q2.oldestDateTime.tm_year)+1];
-    char hour[countDigit(q2.oldestDateTime.tm_hour)+1];
-    char min[countDigit(q2.oldestDateTime.tm_min)+1];
-    sprintf(day, "%u", q2.oldestDateTime.tm_mday);
-    sprintf(mon, "%u", q2.oldestDateTime.tm_mon);
-    sprintf(year, "%u", q2.oldestDateTime.tm_year);
-    sprintf(hour, "%u", q2.oldestDateTime.tm_hour);
-    sprintf(min, "%u", q2.oldestDateTime.tm_min);
+    char fecha[countDigit(q2.oldestDateTime.tm_mday)+countDigit(q2.oldestDateTime.tm_mon)+countDigit(q2.oldestDateTime.tm_year)+countDigit(q2.oldestDateTime.tm_hour)+countDigit(q2.oldestDateTime.tm_min)+CANT_CARACTERS_Q2];
+    sprintf(fecha, "%u/%u/%u %u:%u", q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
 
-    addHTMLRow(html, q2.bikeStation, q2.bikeEndStation, day, mon,year,hour,min);
-    
+    addHTMLRow(html, q2.bikeStation, q2.bikeEndStation, fecha);
 }
 
 int doQuery2(stationADT sta) {
