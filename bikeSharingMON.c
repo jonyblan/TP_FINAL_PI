@@ -1,4 +1,5 @@
 #include "stationADT.h"
+#include "htmlTable.h"
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,8 +91,27 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
     return OK;
 }
 
-void printQuery1(struct q1 q1, FILE * file) {
+int countDigit(unsigned n)  { 
+    if (n == 0) 
+        return 1; 
+    int count = 0; 
+    while (n != 0) { 
+        n = n / 10; 
+        ++count; 
+    } 
+    return count; 
+} 
+
+
+void printQuery1(struct q1 q1, FILE * file, htmlTable html) {
     fprintf(file, "%s;%u;%u;%u\n", q1.bikeStation, q1.memberTrips, q1.casualTrips, q1.totalTrips);
+    char memberTrips[countDigit(q1.memberTrips)];
+    char casualTrips[countDigit(q1.casualTrips)];
+    char totalTrips[countDigit(q1.totalTrips)];
+    sprintf(memberTrips, "%u", q1.memberTrips);
+    sprintf(casualTrips, "%u", q1.casualTrips);
+    sprintf(totalTrips, "%u", q1.totalTrips);
+    addHTMLRow(html, q1.bikeStation, memberTrips, casualTrips, totalTrips);
 }
 
 int doQuery1(stationADT sta) {
@@ -99,19 +119,20 @@ int doQuery1(stationADT sta) {
     if(fQuery1 == NULL){
         return ERROR;
     }
-    struct q1 * q1;
+    htmlTable hQuery1 = newTable("query1.html", 4, "bikeStation", "memberTrips", "casualTrips", "allTrips");
+    query1 * q1;
     fprintf(fQuery1, "bikeStation;memberTrips;casualTrips;allTrips\n");
     while (hasNext1StaADT(sta)) {
-        q1 = next1StaADT;
-        printQuery1(*q1, fQuery1);
-        // FALTA HTML
+        q1 = next1StaADT(sta);
+        printQuery1(*q1, fQuery1, hQuery1);
     }
     free(q1);
     return OK;
 }
 
-void printQuery2(query2 q2, FILE * file) {
-    fprintf(file, "%s;%s;%d/%d/%d %d:%d", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
+void printQuery2(query2 q2, FILE * file, htmlTable html) {
+    fprintf(file, "%s;%s;%d/%d/%d %d:%d\n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
+    
 }
 
 int doQuery2(stationADT sta) {
@@ -119,12 +140,13 @@ int doQuery2(stationADT sta) {
     if(fQuery2 == NULL){
         return ERROR;
     }
+    htmlTable hQuery2 = newTable("query2.html", "bikeStation", "bikeEndStation", "oldestDateTime");
     query2 * q2;
     fprintf(fQuery2, "bikeStation;bikeEndStation;oldestDateTime\n");
     start2StaADT(sta);
     while (hasNext2StaADT(sta)) {
         q2 = next2StaADT(sta);
-        printQuery2(*q2, fQuery2);
+        printQuery2(*q2, fQuery2, hQuery2);
         // FALTA HTML
     }
     free(q2);
@@ -182,10 +204,10 @@ int main(int argc, char const *argv[]) {
         exit(1);
     }
 
-    // if (doQuery1(stations) == ERROR) {
-    //     fprintf(stderr, "Error al procesar query1\n");
-    //     exit(1);
-    // }
+    if (doQuery1(stations) == ERROR) {
+        fprintf(stderr, "Error al procesar query1\n");
+        exit(1);
+    }
 
     if (doQuery2(stations) == ERROR) {
         fprintf(stderr, "Error al procesar query2\n");
