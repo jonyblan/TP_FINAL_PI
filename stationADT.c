@@ -5,7 +5,8 @@
 #include <strings.h>
 #include <time.h>
 #include <stdio.h>
-
+#define NULL_QU1 {NULL, 0, 0, 0}
+#define NULL_QU2 {NULL, NULL, {0,0,0,0,0,0,0,0,0}}
 #define WEEKDAY(d,m,y) ((((d) += (m) < 3 ? (y)-- : (y) - 2, 23*(m)/9 + (d) + 4 + (y)/4- (y)/100 + (y)/400)-1)%7)
 
 struct trip {
@@ -192,7 +193,7 @@ int hasNext1StaADT(stationADT sta) {
 
 struct q1 next1StaADT(stationADT sta) {
     if (!hasNext1StaADT(sta)) {
-        query1 ret = {NULL, 0, 0, 0};
+        query1 ret = NULL_QU1;
         return ret;
     }
 
@@ -216,7 +217,7 @@ int hasNext2StaADT(stationADT sta) {
 
 query2 next2StaADT(stationADT sta) {
     if (!hasNext2StaADT(sta)) {
-        query2 ret = {NULL, NULL, 0};
+        query2 ret = ;
         return ret;
     }
     query2 ret;

@@ -10,6 +10,8 @@
 #define COLQ2 3
 #define COLQ3 3
 #define BLOQUE 50
+#define CANT_CARACTERS_Q2 17
+
 
 int getLine(char ** s, FILE * file) {
     size_t w = 0;
@@ -120,7 +122,7 @@ int countDigit(unsigned n)  {
 
 
 void printQuery1(struct q1 q1, FILE * file, htmlTable html) {
-    fprintf(file, "%s;%u;%u;%u\n", q1.bikeStation, q1.memberTrips, q1.casualTrips, q1.totalTrips);
+    fprintf(file, "2d/%2d/%4d %2d:%2d\n", q1.bikeStation, q1.memberTrips, q1.casualTrips, q1.totalTrips);
 
     char memberTrips[countDigit(q1.memberTrips)+1];
     char casualTrips[countDigit(q1.casualTrips)+1];
@@ -152,8 +154,8 @@ int doQuery1(stationADT sta) {
 void printQuery2(query2 q2, FILE * file, htmlTable html) {
     fprintf(file, "%s;%s;%d/%d/%d %d:%d\n", q2.bikeStation, q2.bikeEndStation, q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
     
-    char fecha[countDigit(q2.oldestDateTime.tm_mday)+countDigit(q2.oldestDateTime.tm_mon)+countDigit(q2.oldestDateTime.tm_year)+countDigit(q2.oldestDateTime.tm_hour)+countDigit(q2.oldestDateTime.tm_min)+CANT_CARACTERS_Q2];
-    sprintf(fecha, "%u/%u/%u %u:%u", q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
+    char fecha[CANT_CARACTERS_Q2];
+    sprintf(fecha, "%02u/%02u/%4u %02u:%02u", q2.oldestDateTime.tm_mday, q2.oldestDateTime.tm_mon, q2.oldestDateTime.tm_year, q2.oldestDateTime.tm_hour, q2.oldestDateTime.tm_min);
 
     addHTMLRow(html, q2.bikeStation, q2.bikeEndStation, fecha);
 }
