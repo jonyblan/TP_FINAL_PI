@@ -50,68 +50,81 @@ typedef struct q3 {
 } query3;
 
 /*
-* nuevo ADT para manejar las estaciones
+* Nuevo ADT para manejar las estaciones
+* @returns puntero al nuevo ADT
 */
 stationADT newStaADT(void);
 
 /*
-* agrega una nueva estacion a las estructuras
+* Agrega una nueva estacion a las estructuras
+* @returns OK si se logró agregar la información; ERROR si falla
+* @param sta ADT donde agregar la información
+* @param name nombre de la estación
+* @param id id de la estación
 */
 int addStaADT(stationADT sta, char * name, unsigned id);
 
 /*
-* agrega un viaje ya con toda la informacion necesaria a las estructuras
+* Agrega un alquiler ya con toda la informacion necesaria a las estructuras
+* @param sta ADT donde agregar la información
+* @param tStart datos del tiempo de inicio del alquiler
+* @param idStart id de estación de incio del alquiler
+* @param tEnd datos del tiempo de fin del alquier
+* @param idEnd id de estación de fin del alquiler
+# @param isMember 1 si es miembro; 0 si no
 */
 void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm tEnd, unsigned idEnd, int isMember);
 
 /*
-* una vez leida y almacenada toda la informacion, libera los recursos utilizados para leer
+* Una vez leida y almacenada toda la informacion, libera los recursos utilizados para leer
+* @param sta ADT a liberar información
 */
 void freePostReadStaADT(stationADT sta);
 
 /*
-* prepara las estructuras para poder realizar la query1 e inicia el iterador para la query1
+* Prepara las estructuras para poder realizar la query1 e inicia el iterador para la query1
+* @returns OK si se preparó todo correctamente; ERROR si falla
 */
 int start1StaADT(stationADT sta);
 
 /*
-* verifica que haya proximo para la query1
+* Verifica que haya proximo para la query1
+* @returns 1 si hay siguiente; 0 si no
 */
 int hasNext1StaADT(stationADT sta);
 
 /*
-* devuelve el siguiente y aumenta el iterador de la query1
+* Devuelve el siguiente y aumenta el iterador de la query1
+* @returns datos para query1 donde está el iterador
 */
 query1 next1StaADT(stationADT sta);
 
 /*
-* inicia el iterador para la query2
+* Inicia el iterador para la query2
 */
 void start2StaADT(stationADT sta);
 
 /*
-* verifica que haya proximo para la query1
+* Verifica que haya proximo para la query1
+* @returns 1 si hay siguiente; 0 si no
 */
 int hasNext2StaADT(stationADT sta);
 
 /*
-* devuelve el siguiente y aumenta el iterador de la query1
+* Devuelve el siguiente y aumenta el iterador de la query1
+* @returns datos para query2 donde está el iterador
 */
 query2 next2StaADT(stationADT sta);
 
 /*
-* devuelve la informacion necesaria para la query3
+* Devuelve la informacion necesaria para la query3
+* @returns datos para query3
 */
 query3 query3StaADT(stationADT sta);
 
 /*
-* libera todos los recursos utilizados por el ADT
+* Libera todos los recursos utilizados por el ADT
 */
 void freeEndStaADT(stationADT sta);
-
-/*
-* retorna la cantidad de viajes en el iterador
-*/
-int cantViajes(stationADT sta);
 
 #endif
