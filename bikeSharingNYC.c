@@ -169,8 +169,10 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
     if (getLine(&s, fileBike) == -1) {
         return ERROR;
     }
+    int a = 0;
     while (!feof(fileBike)) {
         if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
+            printf("%d\n", a++);
             unsigned idStart, idEnd, isMember;
             struct tm dateStart, dateEnd;
             for (int i = 0; token != NULL; token = strtok(NULL, ";"), i++) {
@@ -317,13 +319,14 @@ int doQuery3(stationADT sta) {
 
 int main(int argc, char const *argv[]) {
     if (argc != 3) {
-        return ERROR;
+        fprintf(stderr, "Cantidad de parámetros erronea\n");
+        exit(1);
     }
     time_t t = time(NULL);
     FILE * fileBike = fopen(argv[1], "r");
     FILE * fileStat = fopen(argv[2], "r");
 
-      if (fileBike == NULL || fileStat == NULL) {
+    if (fileBike == NULL || fileStat == NULL) {
         fprintf(stderr, "Error al abrir archivos\n");
         exit(1);
     }
@@ -331,6 +334,7 @@ int main(int argc, char const *argv[]) {
     stationADT stations = newStaADT();
     if (stations == NULL) {
         fprintf(stderr, "Error al crear TAD\n");
+        exit(1);
     }
     
     if (readStatFile(fileStat, stations) == ERROR) {
