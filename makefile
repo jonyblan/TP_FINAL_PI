@@ -2,7 +2,7 @@ COMPILER=gcc
 OUTPUT_FILE=bikeSharingMON.out
 FRONT=bikeSharingMON.c
 
-all: programa
+all: programa clean
 
 programa: $(FRONT) stationADT.o bstADT.o htmlTable.o
 	$(COMPILER) -o $(OUTPUT_FILE) $(FRONT) stationADT.o bstADT.o htmlTable.o
