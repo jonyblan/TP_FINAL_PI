@@ -1,17 +1,17 @@
 /*
-**  bstADT.h
-**  Contenido:
-**      Prototipos de funciones para el usuario de bstADT.
-**      bstADT:
-**          bstADT es una libreria para utilizar árboles
-**          de búsqueda binaria, especialmente para
-**          complementar el funcionamiento de stationsADT.
-**  Autor:
-**      Buela Mateo
-**  Version:
-**      1.1.0
-**  Fecha de creación:
-**      22/11/2023
+* bstADT.h
+* Contenido:
+*     Prototipos de funciones para el usuario de bstADT.
+*     bstADT:
+*         bstADT es una libreria para utilizar árboles
+*         de búsqueda binaria, especialmente para
+*         complementar el funcionamiento de stationsADT.
+* Autor:
+*     Buela Mateo
+* Version:
+*     1.1.0
+* Fecha de creación:
+*     22/11/2023
 */
 
 #ifndef __BST_ADT_H__

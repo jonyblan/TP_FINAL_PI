@@ -1,18 +1,18 @@
 /*
-**  stationADT.h
-**  Contenido:
-**      Prototipos de funciones para el usuario de stationADT.
-**      stationADT:
-**          stationADT es una libreria para almacenar y procesar
-**          datos de alquileres y estaciones de bicicletas.
-**  Autores:
-**      Buela Mateo
-**      Lanari Augusto
-**      Blankleder Jonathan
-**  Version:
-**      1.0.0
-**  Fecha de creación:
-**      02/12/2023
+* stationADT.h
+* Contenido:
+*     Prototipos de funciones para el usuario de stationADT.
+*     stationADT:
+*         stationADT es una libreria para almacenar y procesar
+*         datos de alquileres y estaciones de bicicletas.
+* Autores:
+*     Buela Mateo
+*     Lanari Augusto
+*     Blankleder Jonathan
+* Version:
+*     1.0.0
+* Fecha de creación:
+*     02/12/2023
 */
 
 #ifndef __STATIONADT_H__

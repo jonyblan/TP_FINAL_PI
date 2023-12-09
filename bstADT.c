@@ -1,13 +1,13 @@
 /*
-**  bstADT.c
-**  Contenido:
-**      Funciones y estructuras que dan soporte a bstADT.
-**  Autor:
-**      Buela Mateo
-**  Version:
-**      1.1.0
-**  Fecha de creación:
-**      22/11/2023
+* bstADT.c
+* Contenido:
+*     Funciones y estructuras que dan soporte a bstADT.
+* Autor:
+*     Buela Mateo
+* Version:
+*     1.1.0
+* Fecha de creación:
+*     22/11/2023
 */
 
 #include "bstADT.h"

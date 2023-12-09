@@ -1,17 +1,17 @@
 /*
-**  bikeSharingNYC.c
-**  Contenido: 
-**      Lectura y procesado de archivos de alquileres y estaciones de
-**      la ciudad de Nueva York, Estados Unidos. Donde se ejecutan los
-**      pedidos o "querys" solicitados en el TPE.
-**  Autores:
-**      Buela Mateo
-**      Lanari Augusto
-**      Blankleder Jonathan
-**  Version:
-**      1.0.0
-**  Fecha de creación:
-**      03/12/2023
+* bikeSharingNYC.c
+* Contenido: 
+*     Lectura y procesado de archivos de alquileres y estaciones de
+*     la ciudad de Nueva York, Estados Unidos. Donde se ejecutan los
+*     pedidos o "querys" solicitados en el TPE.
+* Autores:
+*     Buela Mateo
+*     Lanari Augusto
+*     Blankleder Jonathan
+* Version:
+*     1.0.0
+* Fecha de creación:
+*     03/12/2023
 */
 
 #include "stationADT.h"
@@ -186,9 +186,7 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
                     break;
                 }
             }
-            if (idStart != idEnd) {
-                addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
-            }
+            addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
         }
     }
     free(s);
@@ -304,7 +302,7 @@ int doQuery3(stationADT sta) {
 
 int main(int argc, char const *argv[]) {
     if (argc != 3) {
-        fprintf(stderr, "Cantidad de parámetros erronea\n");
+        fprintf(stderr, "Error: cantidad de parámetros erronea\n");
         exit(1);
     }
     time_t t = time(NULL);

@@ -1,17 +1,17 @@
 /*
-**  bikeSharingMON.c
-**  Contenido: 
-**      Lectura y procesado de archivos de alquileres y estaciones de
-**      la ciudad de Montreal, Canadá. Donde se ejecutan los 3 pedidos
-**      o "querys" solicitados en el TPE.
-**  Autores:
-**      Buela Mateo
-**      Lanari Augusto
-**      Blankleder Jonathan
-**  Version:
-**      1.0.0
-**  Fecha de creación:
-**      03/12/2023
+* bikeSharingMON.c
+* Contenido: 
+*     Lectura y procesado de archivos de alquileres y estaciones de
+*     la ciudad de Montreal, Canadá. Donde se ejecutan los 3 pedidos
+*     o "querys" solicitados en el TPE.
+* Autores:
+*     Buela Mateo
+*     Lanari Augusto
+*     Blankleder Jonathan
+* Version:
+*     1.0.0
+* Fecha de creación:
+*     03/12/2023
 */
 
 #include "stationADT.h"
@@ -177,9 +177,7 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
                     break;
                 }
             }
-            if (idStart != idEnd) {
-                addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
-            }
+            addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
         }
     }
     free(s);
@@ -293,7 +291,51 @@ int doQuery3(stationADT sta) {
     return OK;
 }
 
-int main(int argc, char const *argv[]) {
+char * readFiles(FILE * fileBike, FILE * fileStat, stationADT stations, char respuesta[]){
+    if(strcmp(respuesta, "") != 0){
+        return respuesta;
+    }
+    if (readStatFile(fileStat, stations) == ERROR) {
+        return ("Error al leer archivo de estaciones");
+    }
+
+    if (readBikeFile(fileBike, stations) == ERROR) {
+        return ("Error al leer archivo de viajes");
+    }
+    freePostReadStaADT(stations);
+    return ("");
+}
+
+char * makeQuerys(stationADT stations, char respuesta[]){
+    if(strcmp(respuesta, "") != 0){
+        return respuesta;
+    }
+    if (start1StaADT(stations) == ERROR) {
+        return ("Error al iniciar proceso de query1");
+    }
+
+    if (doQuery1(stations) == ERROR) {
+        return ("Error al procesar query1");
+    }
+
+    if (doQuery2(stations) == ERROR) {
+        return ("Error al procesar query2");
+    }
+
+    if (doQuery3(stations) == ERROR) {
+        return ("Error al procesar query3");
+    }
+    return ("");
+}
+
+void showRespuesta(char respuesta[]){
+    if(strcmp(respuesta, "") != 0){
+        printf("%s\n", respuesta);
+        exit(1);
+    }
+}
+
+int main(int argc, char const * argv[]) {
     if (argc != 3) {
         fprintf(stderr, "Error: cantidad de parámetros erronea\n");
         exit(1);
@@ -311,42 +353,18 @@ int main(int argc, char const *argv[]) {
     if (stations == NULL) {
         fprintf(stderr, "Error al crear TAD\n");
     }
-    
-    if (readStatFile(fileStat, stations) == ERROR) {
-        fprintf(stderr, "Error al leer archivo de estaciones\n");
-        exit(1);
-    }
-    
-    if (readBikeFile(fileBike, stations) == ERROR) {
-        fprintf(stderr, "Error al leer archivo de viajes\n");
-        exit(1);
-    }
+    char * respuesta = "";
 
-    freePostReadStaADT(stations);
+    respuesta = readFiles(fileBike, fileStat, stations, respuesta);
 
-    if (start1StaADT(stations) == ERROR) {
-        fprintf(stderr, "Error al iniciar proceso de query1\n");
-        exit(1);
-    }
+    respuesta = makeQuerys(stations, respuesta);
 
-    if (doQuery1(stations) == ERROR) {
-        fprintf(stderr, "Error al procesar query1\n");
-        exit(1);
-    }
-
-    if (doQuery2(stations) == ERROR) {
-        fprintf(stderr, "Error al procesar query2\n");
-        exit(1);
-    }
-
-    if (doQuery3(stations) == ERROR) {
-        fprintf(stderr, "Error al procesar query3\n");
-        exit(1);
-    }
+    showRespuesta(respuesta);
 
     freeEndStaADT(stations);
 
     printf("Tiempo: %ld segundos\n", time(NULL)-t);
+
     return 0;
 }
 

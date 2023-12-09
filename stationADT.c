@@ -1,15 +1,15 @@
 /*
-**  stationADT.c
-**  Contenido:
-**      Funciones y estructuras que dan soporte a stationADT.
-**  Autores:
-**      Buela Mateo
-**      Lanari Augusto
-**      Blankleder Jonathan
-**  Version:
-**      1.0.0
-**  Fecha de creación:
-**      02/12/2023
+* stationADT.c
+* Contenido:
+*     Funciones y estructuras que dan soporte a stationADT.
+* Autores:
+*     Buela Mateo
+*     Lanari Augusto
+*     Blankleder Jonathan
+* Version:
+*     1.0.0
+* Fecha de creación:
+*     02/12/2023
 */
 
 #include "stationADT.h"
@@ -122,7 +122,7 @@ void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm
     tStart.tm_isdst = -1;
     isMember ? node->head.memberTrips++ : node->head.casualTrips++;
 
-    if ((node->head.oldest.nTime > (t = mktime(&tStart))) || node->head.oldest.nTime == 0) {
+    if ((node->head.oldest.nTime > (t = mktime(&tStart)) || node->head.oldest.nTime == 0) && idStart != idEnd) {
         node->head.oldest.nTime = t;
         node->head.oldest.sTime = tStart;
         node->head.oldest.endName = realloc(node->head.oldest.endName, strlen(endNode->head.name)+1);
