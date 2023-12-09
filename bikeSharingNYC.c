@@ -304,7 +304,7 @@ int main(int argc, char const *argv[]) {
         fprintf(stderr, "Error: cantidad de parámetros erronea\n");
         exit(1);
     }
-    time_t t = time(NULL);
+    
     FILE * fileBike = fopen(argv[1], "r");
     FILE * fileStat = fopen(argv[2], "r");
 
