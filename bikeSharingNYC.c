@@ -26,27 +26,92 @@
 enum columnas {CANTCOL_STATIONS = 4, COLQ1 = 4, COLQ2 = 3, COLQ3 = 3};
 
 /*
-** Prototipos de funciones de bikeSharingMON.c
+** Lee linea de archivo.
+**   @param s es puntero char * de salida donde se almacena la lina leida.
+**   @param FILE archivo a leer.
+**   @returns OK si se leyo correctamente, ERROR si falla.
 */
 int getLine(char ** s, FILE * file);
 
+/*
+** Lee y almacena datos de archivo de estaciones.
+**   @param station, station ADT donde guarda los datos.
+**   @param fileStat archivo de estaciones  a leer.
+**   @returns OK si se leyo correctamente, ERROR si falla.
+*/
 int readStatFile(FILE * fileStat, stationADT station);
+
+/*
+** Lee y almacena datos de archivo de alquileres.
+**   @param stations, station ADT donde guarda los datos.
+**   @param fileBike archivo de estaciones  a leer.
+**   @returns OK si se leyo correctamente, ERROR si falla.
+*/
 
 int readBikeFile(FILE * fileBike, stationADT stations);
 
+/*
+** Cuenta la cantidad de digitos de un numero entero unsigned.
+**   @param unsigned int a contar digitos
+**   @returns la cantidad de digitos.
+*/
+
 int countDigit(unsigned n);
+
+/*
+** Imprime fila de datos de la query1 tanto en el archivo csv, como html
+**   @param q1 struct q1 donde obtener los datos a imprimir.
+**   @param file arcivo .csv a escribir.
+**   @returns html archivo .html a escribir.
+*/
 
 void printQuery1(query1 q1, FILE * file, htmlTable html);
 
+/*
+**  Obtiene los datos para la query1 de station ADT para crear y escribir los archivos de salida
+**   @param stationADT a obtener datos 
+**   @returns OK si se leyo y escribio correctamente, ERROR si falla.
+*/
+
 int doQuery1(stationADT sta);
+
+
+/*
+** Imprime fila de datos de la query2 tanto en el archivo csv, como html
+**   @param q2 struct q1 donde obtener los datos a imprimir.
+**   @param file arcivo .csv a escribir.
+**   @returns html archivo .html a escribir.
+*/
 
 void printQuery2(query2 q2, FILE * file, htmlTable html);
 
+/*
+**  Obtiene los datos para la query2 de station ADT para crear y escribir los archivos de salida
+**   @param stationADT a obtener datos 
+**   @returns OK si se leyo y escribio correctamente, ERROR si falla.
+*/
+
 int doQuery2(stationADT sta);
+
+/*
+** Imprime fila de datos de la query3 tanto en el archivo csv, como html
+**   @param q3 struct q1 donde obtener los datos a imprimir.
+**   @param file arcivo .csv a escribir.
+**   @returns html archivo .html a escribir.
+*/
+
 
 void printQuery3(query3 q3, FILE * file, htmlTable html, int i, char * dia);
 
+/*
+**  Obtiene los datos para la query3 de station ADT para crear y escribir los archivos de salida
+**   @param stationADT a obtener datos 
+**   @returns OK si se leyo y escribio correctamente, ERROR si falla.
+*/
+
 int doQuery3(stationADT sta);
+
+
 
 int getLine(char ** s, FILE * file) {
     size_t w = 0;
