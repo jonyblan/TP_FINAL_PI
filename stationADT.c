@@ -1,3 +1,17 @@
+/*
+**  stationADT.c
+**  Contenido:
+**      Funciones y estructuras que dan soporte a stationADT.
+**  Autores:
+**      Buela Mateo
+**      Lanari Augusto
+**      Blankleder Jonathan
+**  Version:
+**      1.0.0
+**  Fecha de creación:
+**      02/12/2023
+*/
+
 #include "stationADT.h"
 #include "bstADT.h"
 #include <stdlib.h>
@@ -252,19 +266,3 @@ void freeEndStaADT(stationADT sta) {
     free(sta->arr);
     free(sta);
 }
-
-void a(stationADT sta) {
-    for (int i = 0; i < sta->dim; i++) {
-        printf("%d\t;%s\n", sta->arr[i].totalTrips, sta->arr[i].name);
-    }
-}
-
-// NO PONER LOS EXIT AFUERA
-
-
-/*
-    IDEAS:
-        -arbol binario para id
-        -el bstADT tenerlo adentro del stationADT
-        -tenerlo a los dos en un ADT mas grande
-*/

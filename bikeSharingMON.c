@@ -1,3 +1,19 @@
+/*
+**  bikeSharingMON.c
+**  Contenido: 
+**      Lectura y procesado de archivos de alquileres y estaciones de
+**      la ciudad de Montreal, Canadá. Donde se ejecutan los 3 pedidos
+**      o "querys" solicitados en el TPE.
+**  Autores:
+**      Buela Mateo
+**      Lanari Augusto
+**      Blankleder Jonathan
+**  Version:
+**      1.0.0
+**  Fecha de creación:
+**      03/12/2023
+*/
+
 #include "stationADT.h"
 #include "htmlTable.h"
 #include <time.h>
@@ -5,9 +21,32 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CANTCOL 2
+#define BLOQUE 50
 #define CANT_CARACTERS_Q2 17
-#define BLOQUE 30
+enum columnas {CANTCOL_STATIONS = 2, COLQ1 = 4, COLQ2 = 3, COLQ3 = 3};
+
+/*
+** Prototipos de funciones de bikeSharingMON.c
+*/
+int getLine(char ** s, FILE * file);
+
+int readStatFile(FILE * fileStat, stationADT station);
+
+int readBikeFile(FILE * fileBike, stationADT stations);
+
+int countDigit(unsigned n);
+
+void printQuery1(query1 q1, FILE * file, htmlTable html);
+
+int doQuery1(stationADT sta);
+
+void printQuery2(query2 q2, FILE * file, htmlTable html);
+
+int doQuery2(stationADT sta);
+
+void printQuery3(query3 q3, FILE * file, htmlTable html, int i, char * dia);
+
+int doQuery3(stationADT sta);
 
 int getLine(char ** s, FILE * file) {
     size_t w = 0;
@@ -34,7 +73,7 @@ int readStatFile(FILE * fileStat, stationADT station) {
     while (!feof(fileStat)) {
         if ((getLine(&s, fileStat)) != -1 && (token = strtok(s, ";")) != NULL) {
             unsigned id;
-            for (int i = 0; token != NULL && i < CANTCOL; token = strtok(NULL, ";"), i++) {
+            for (int i = 0; token != NULL && i < CANTCOL_STATIONS; token = strtok(NULL, ";"), i++) {
                 switch (i) {
                 case 0:
                     sscanf(token, "%u", &id);
@@ -193,7 +232,7 @@ int doQuery3(stationADT sta) {
     }
     fprintf(fQuery3, "weekDay;startedTrips;endedTrips\n");
     char * diasSemana[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-    for (int i = 0; i < T_DAYS; i++) {
+    for (int i = MON; i < T_DAYS; i++) {
         printQuery3(q3, fQuery3, hQuery3, i, diasSemana[i]);
     }
     closeHTMLTable(hQuery3);
