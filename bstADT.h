@@ -19,16 +19,33 @@
 
 typedef struct bstCDT * bstADT;
 
-// Crea un arbol binario de busqueda
+
+/*
+* genera un adt para realizar un arbol binario de busqueda 
+* @returns puntero a arbol binario de busqueda
+*/
+
 bstADT newBstADT(void);
 
-// Libera toda la memoria reservada por el TAD
+/*libera los recursos utilizados por el arbol
+* @param bstADT puntero a arbol binario de busqueda
+*/
+
 void freeBstADT(bstADT bst);
 
-// Retorna el puntero
+/*
+*  devuelve puntero a estructura vinculado a una clave
+*  @returns bstADT el puntero a estructura, retorna NULL si no encuentra
+*  @param puntero a arbol binario de busqueda
+*  @param unsigned clave a verificar si esta
+*/
 void * belongsBstADT(const bstADT bst, unsigned id);
 
-// Agrega un elemento respetando el orden
+/* agrega un elemento vinculado a una clave al arbol de forma ordenada
+*  @param bstADT arbol binario a agregar elemento
+*  @param unsigned clave que da orden al arbol
+*  @param void* estructura vinculada a id
+*/
 void insertBstADT(bstADT bst, unsigned id, void * p);
 
 #endif
