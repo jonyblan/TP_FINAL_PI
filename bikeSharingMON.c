@@ -247,12 +247,10 @@ int doQuery2(stationADT sta) {
     fprintf(fQuery2, "bikeStation;bikeEndStation;oldestDateTime\n");
     start2StaADT(sta);
     while (hasNext2StaADT(sta)) {
-		if(cantViajes(sta)) {
-            q2 = next2StaADT(sta);
-			printQuery2(q2, fQuery2, hQuery2);
-		} else {
-            next2StaADT(sta);
-        }
+        q2 = next2StaADT(sta);
+		if(q2.bikeEndStation != NULL) {
+		    printQuery2(q2, fQuery2, hQuery2);
+		}
     }
     closeHTMLTable(hQuery2);
     fclose(fQuery2);

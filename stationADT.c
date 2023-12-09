@@ -121,8 +121,8 @@ void addTripStaADT(stationADT sta, struct tm tStart, unsigned idStart, struct tm
     }
     tStart.tm_isdst = -1;
     isMember ? node->head.memberTrips++ : node->head.casualTrips++;
-
-    if ((node->head.oldest.nTime > (t = mktime(&tStart)) || node->head.oldest.nTime == 0) && idStart != idEnd) {
+    struct tm auxTStart = tStart;
+    if ((node->head.oldest.nTime > (t = mktime(&auxTStart)) || node->head.oldest.nTime == 0) && idStart != idEnd) {
         node->head.oldest.nTime = t;
         node->head.oldest.sTime = tStart;
         node->head.oldest.endName = realloc(node->head.oldest.endName, strlen(endNode->head.name)+1);
