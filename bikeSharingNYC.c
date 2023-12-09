@@ -27,91 +27,80 @@ enum columnas {CANTCOL_STATIONS = 4, COLQ1 = 4, COLQ2 = 3, COLQ3 = 3};
 
 /*
 *  Lee linea de archivo.
-*    @param s es puntero char * de salida donde se almacena la lina leida.
-*    @param FILE archivo a leer.
-*    @returns OK si se leyo correctamente, ERROR si falla.
+*    @param s es puntero char * de salida donde se almacena la lina leida
+*    @param FILE archivo a leer
+*    @returns OK si se leyo correctamente, ERROR si falla
 */
 int getLine(char ** s, FILE * file);
 
 /*
-*  Lee y almacena datos de archivo de estaciones.
-*    @param station, station ADT donde guarda los datos.
-*    @param fileStat archivo de estaciones  a leer.
-*    @returns OK si se leyo correctamente, ERROR si falla.
+*  Lee y almacena datos de archivo de estaciones
+*    @param station, station ADT donde guarda los datos
+*    @param fileStat archivo de estaciones  a leer
+*    @returns OK si se leyo correctamente, ERROR si falla
 */
 int readStatFile(FILE * fileStat, stationADT station);
 
 /*
-*  Lee y almacena datos de archivo de alquileres.
-*    @param stations, station ADT donde guarda los datos.
-*    @param fileBike archivo de estaciones  a leer.
-*    @returns OK si se leyo correctamente, ERROR si falla.
+*  Lee y almacena datos de archivo de alquileres
+*    @param stations, station ADT donde guarda los datos
+*    @param fileBike archivo de estaciones  a leer
+*    @returns OK si se leyo correctamente, ERROR si falla
 */
-
 int readBikeFile(FILE * fileBike, stationADT stations);
 
 /*
 *  Cuenta la cantidad de digitos de un numero entero unsigned.
 *    @param unsigned int a contar digitos
-*    @returns la cantidad de digitos.
+*    @returns la cantidad de digitos
 */
-
 int countDigit(unsigned n);
 
 /*
 *  Imprime fila de datos de la query1 tanto en el archivo csv, como html
-*    @param q1 struct q1 donde obtener los datos a imprimir.
-*    @param file arcivo .csv a escribir.
-*    @returns html archivo .html a escribir.
+*    @param q1 struct q1 donde obtener los datos a imprimir
+*    @param file arcivo .csv a escribir
+*    @returns html archivo .html a escribir
 */
-
 void printQuery1(query1 q1, FILE * file, htmlTable html);
 
 /*
 *   Obtiene los datos para la query1 de station ADT para crear y escribir los archivos de salida
-*    @param stationADT a obtener datos 
-*    @returns OK si se leyo y escribio correctamente, ERROR si falla.
+*    @param stationADT a obtener datos
+*    @returns OK si se leyo y escribio correctamente, ERROR si falla
 */
-
 int doQuery1(stationADT sta);
 
 
 /*
 *  Imprime fila de datos de la query2 tanto en el archivo csv, como html
-*    @param q2 struct q1 donde obtener los datos a imprimir.
-*    @param file arcivo .csv a escribir.
-*    @returns html archivo .html a escribir.
+*    @param q2 struct q1 donde obtener los datos a imprimir
+*    @param file arcivo .csv a escribir
+*    @returns html archivo .html a escribir
 */
-
 void printQuery2(query2 q2, FILE * file, htmlTable html);
 
 /*
 *   Obtiene los datos para la query2 de station ADT para crear y escribir los archivos de salida
-*    @param stationADT a obtener datos 
-*    @returns OK si se leyo y escribio correctamente, ERROR si falla.
+*    @param stationADT a obtener datos
+*    @returns OK si se leyo y escribio correctamente, ERROR si falla
 */
-
 int doQuery2(stationADT sta);
 
 /*
 *  Imprime fila de datos de la query3 tanto en el archivo csv, como html
-*    @param q3 struct q1 donde obtener los datos a imprimir.
-*    @param file arcivo .csv a escribir.
-*    @returns html archivo .html a escribir.
+*    @param q3 struct q1 donde obtener los datos a imprimir
+*    @param file arcivo .csv a escribir
+*    @returns html archivo .html a escribir
 */
-
-
 void printQuery3(query3 q3, FILE * file, htmlTable html, int i, char * dia);
 
 /*
 *   Obtiene los datos para la query3 de station ADT para crear y escribir los archivos de salida
 *    @param stationADT a obtener datos 
-*    @returns OK si se leyo y escribio correctamente, ERROR si falla.
+*    @returns OK si se leyo y escribio correctamente, ERROR si falla
 */
-
 int doQuery3(stationADT sta);
-
-
 
 int getLine(char ** s, FILE * file) {
     size_t w = 0;
@@ -132,13 +121,13 @@ int getLine(char ** s, FILE * file) {
 int readStatFile(FILE * fileBike, stationADT station) {
 char * s = NULL;
     char * token;
-    if (getLine(&s, fileBike) == -1) {
+    if (getLine(&s, fileBike) == ERROR) {
         return ERROR;
     }
     while (!feof(fileBike)) {
-        if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
+        if ((getLine(&s, fileBike)) != ERROR && (token = strtok(s, ";")) != NULL) {
             unsigned id;
-            char *aux;
+            char * aux;
             for (int i = 0; token != NULL && i < CANTCOL_STATIONS; token = strtok(NULL, ";"), i++) {
                 switch (i) {
                 case 0:
@@ -166,13 +155,11 @@ char * s = NULL;
 int readBikeFile(FILE * fileBike, stationADT stations) {
     char * s = NULL;
     char * token;
-    if (getLine(&s, fileBike) == -1) {
+    if (getLine(&s, fileBike) == ERROR) {
         return ERROR;
     }
-    int a = 0;
     while (!feof(fileBike)) {
-        if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
-            printf("%d\n", a++);
+        if ((getLine(&s, fileBike)) != ERROR && (token = strtok(s, ";")) != NULL) {
             unsigned idStart, idEnd, isMember;
             struct tm dateStart, dateEnd;
             for (int i = 0; token != NULL; token = strtok(NULL, ";"), i++) {
@@ -192,34 +179,32 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
                 case 4:
                     break;
                 case 5:
-                    if(*token =='c'){
-                        isMember=0; 
-                    }
-                    else
-                        isMember=1;
+                    isMember = *token == 'm';
                     break;
                 default:
                     return ERROR;
+                    break;
                 }
             }
-            if(idStart!=idEnd)
+            if (idStart != idEnd) {
                 addTripStaADT(stations, dateStart, idStart, dateEnd, idEnd, isMember);
+            }
         }
     }
     free(s);
     return OK;
 }
 
-int countDigit(unsigned n)  { 
-    if (n == 0) 
-        return 1; 
-    int count = 0; 
-    while (n != 0) { 
-        n = n / 10; 
-        ++count; 
-    } 
-    return count; 
-} 
+int countDigit(unsigned n)  {
+    if (n == 0)
+        return 1;
+    int count = 0;
+    while (n != 0) {
+        n /= 10;
+        count++;
+    }
+    return count;
+}
 
 
 void printQuery1(struct q1 q1, FILE * file, htmlTable html) {
@@ -267,7 +252,7 @@ int doQuery2(stationADT sta) {
         return ERROR;
     }
     htmlTable hQuery2 = newTable("query2.html", 3, "bikeStation", "bikeEndStation", "oldestDateTime");
-    if (hQuery2==NULL){
+    if (hQuery2 == NULL){
         return ERROR;
     }
     query2 q2;
@@ -304,12 +289,12 @@ int doQuery3(stationADT sta) {
     }
     query3 q3 = query3StaADT(sta);
     htmlTable hQuery3 = newTable("query3.html", 3, "weekDay", "startedTrips", "endedTrips");
-    if (hQuery3==NULL){
+    if (hQuery3 == NULL){
         return ERROR;
     }
     fprintf(fQuery3, "weekDay;startedTrips;endedTrips\n");
     char * diasSemana[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-    for (int i = 0; i < T_DAYS; i++) {
+    for (int i = MON; i < T_DAYS; i++) {
         printQuery3(q3, fQuery3, hQuery3, i, diasSemana[i]);
     }
     closeHTMLTable(hQuery3);
@@ -346,6 +331,7 @@ int main(int argc, char const *argv[]) {
         fprintf(stderr, "Error al leer archivo de viajes\n");
         exit(1);
     }
+
     freePostReadStaADT(stations);
 
     if (start1StaADT(stations) == ERROR) {
@@ -367,7 +353,6 @@ int main(int argc, char const *argv[]) {
         fprintf(stderr, "Error al procesar query3\n");
         exit(1);
     }
-
 
     freeEndStaADT(stations);
     printf("Tiempo: %ld segundos\n", time(NULL)-t);
