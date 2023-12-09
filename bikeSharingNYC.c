@@ -353,8 +353,6 @@ int main(int argc, char const *argv[]) {
     }
 
     freeEndStaADT(stations);
-    printf("Tiempo: %ld segundos\n", time(NULL)-t);
-
     
     return 0;
 }
