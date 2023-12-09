@@ -151,10 +151,8 @@ int readBikeFile(FILE * fileBike, stationADT stations) {
     if (getLine(&s, fileBike) == ERROR) {
         return ERROR;
     }
-    int a = 0;
     while (!feof(fileBike)) {
         if ((getLine(&s, fileBike)) != -1 && (token = strtok(s, ";")) != NULL) {
-            printf("%d\n", a++);
             unsigned idStart, idEnd, isMember;
             struct tm dateStart, dateEnd;
             for (int i = 0; token != NULL; token = strtok(NULL, ";"), i++) {
