@@ -21,7 +21,7 @@
 #include <stdio.h>
 #define NULL_QU1 {NULL, 0, 0, 0}
 #define NULL_QU2 {NULL, NULL, {0,0,0,0,0,0,0,0,0}}
-#define WEEKDAY(d,m,y) ((((d) += (m) < 3 ? (y)-- : (y) - 2, 23*(m)/9 + (d) + 4 + (y)/4- (y)/100 + (y)/400)-1)%7)
+#define WEEKDAY(d,m,y) ((((d) += (m) < 3 ? (y)-- : (y) - 2, 23*(m)/9 + (d) + 4 + (y)/4- (y)/100 + (y)/400)+6)%7)
 
 struct trip {
     time_t nTime; // time_t de hora de inicio
