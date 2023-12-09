@@ -221,7 +221,7 @@ int countDigit(unsigned n)  {
 
 
 void printQuery1(struct q1 q1, FILE * file, htmlTable html) {
-    fprintf(file, "2d/%2d/%4d %2d:%2d\n", q1.bikeStation, q1.memberTrips, q1.casualTrips, q1.totalTrips);
+    fprintf(file, "%s;%u;%u;%u\n", q1.bikeStation, q1.memberTrips, q1.casualTrips, q1.totalTrips);
 
     char memberTrips[countDigit(q1.memberTrips)+1];
     char casualTrips[countDigit(q1.casualTrips)+1];
