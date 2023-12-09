@@ -14,9 +14,14 @@ Esta librería tiene el fin de construir un árbol de búsqueda binaria, utiliza
 stationADT:
 Esta librería ofrece soporte para el registro de alquileres y sus respectivas estaciones.
 
+htmlTable:
+Libreria provista por la cátedra, permite la realizacion de archivos .html
+
 ## Compilación
 
-Para compilar bikeSharingMON.c y bikeSharingNYC.c se debe añadir tambien stationADT.c bstADT.c (archivos realizados por los alumnos) htmlTable.c (provisto por la cátedra).
+#### CUIDADO AL REALIZAR AL EJECUTAR MAKEFILE SE BORRARÁN TODOS LOS ARCHIVOS .o EN EL DIRECTORIO.
+
+Se debe modificar el archivo makefile y escribir si se quiere compilar bikeSharingMON.c o bikeSharingNYC.c. 
 
 ## Ejecución
 
